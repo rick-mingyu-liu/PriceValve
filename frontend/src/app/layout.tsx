@@ -1,7 +1,10 @@
-import type React from "react"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import "./globals.css"
+import { Inter } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
 
 export default function RootLayout({
   children,
@@ -9,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body className={GeistSans.className}>{children}</body>
+    <html lang="en" className={inter.variable}>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }

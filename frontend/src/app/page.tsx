@@ -1,16 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, useScroll, useTransform, useInView } from "framer-motion"
 import { ArrowRight, Check, X, Target, Search, TrendingUp, Gamepad2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useRef } from "react"
 
 // Animated Counter Component
 function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number }) {
   const [count, setCount] = useState(0)
   const ref = useRef(null)
-  const isInView = useInView(ref)
+  const isInView = useInView(ref, { once: true })
 
   useEffect(() => {
     if (isInView) {
@@ -18,7 +17,7 @@ function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number
       const animate = (currentTime: number) => {
         if (!startTime) startTime = currentTime
         const progress = Math.min((currentTime - startTime) / (duration * 1000), 1)
-        setCount(Math.floor(progress * end))
+        setCount(Math.floor((progress * end) / 100) * 100)
         if (progress < 1) {
           requestAnimationFrame(animate)
         }
@@ -35,19 +34,28 @@ export default function HomePage() {
   const heroRef = useRef(null)
   const featuresRef = useRef(null)
   const isHeroInView = useInView(heroRef)
-  // const isFeaturesInView = useInView(featuresRef); // Removed unused variable
+  const isFeaturesInView = useInView(featuresRef)
+  const [isClient, setIsClient] = useState(false)
 
   // Parallax effects
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -50])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.8])
 
+  // Fixed particle positions to avoid hydration mismatch
+  const particlePositions = [
+    { left: 10, top: 20 },
+    { left: 80, top: 60 },
+    { left: 30, top: 80 },
+    { left: 70, top: 30 },
+    { left: 50, top: 70 },
+  ]
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-[#1a1a2e] to-[#16213e] text-white overflow-hidden">
-      {/* Scroll Progress Indicator */}
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-[#00D4FF] z-50 origin-left"
-        style={{ scaleX: scrollYProgress }}
-      />
       {/* Navigation */}
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
@@ -60,11 +68,18 @@ export default function HomePage() {
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 400 }}
         >
-          <Gamepad2 className="w-8 h-8 mr-2 text-[#00D4FF]" />
-          PriceValve
+          <motion.a
+            href="#"
+            className="text-2xl font-bold flex items-center cursor-pointer"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            <Gamepad2 className="w-8 h-8 mr-2 text-[#00D4FF]" />
+            PriceValve
+          </motion.a>
         </motion.div>
         <div className="flex space-x-8 items-center">
-          {["Home", "Contact"].map((item, index) => (
+          {["Contact"].map((item, index) => (
             <motion.a
               key={item}
               href="#"
@@ -78,13 +93,8 @@ export default function HomePage() {
             </motion.a>
           ))}
           <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                className="bg-transparent border border-[#00D4FF] text-[#00D4FF] hover:bg-[#00D4FF] hover:text-white px-4 py-2 text-sm"
-              >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button className="bg-transparent border border-[#00D4FF] text-[#00D4FF] hover:bg-[#00D4FF] hover:text-white px-4 py-2 text-sm">
                 Login
               </Button>
             </motion.div>
@@ -92,7 +102,7 @@ export default function HomePage() {
         </div>
       </motion.nav>
       {/* Hero Section */}
-      <section ref={heroRef} className="min-h-screen flex items-center px-8 py-20 relative">
+      <section ref={heroRef} className="min-h-screen flex items-center px-8 py-10 relative">
         <motion.div
           style={{ y: heroY, opacity: heroOpacity }}
           className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center"
@@ -122,27 +132,8 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="text-2xl font-semibold text-[#00D4FF]"
             >
-              <motion.span
-                animate={{
-                  rotate: [0, 10, -10, 0],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 3 }}
-                className="inline-block mr-2"
-              >
-                🎲
-              </motion.span>
-              From guessing →
-              <motion.span
-                animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 5, -5, 0],
-                }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 3, delay: 1 }}
-                className="inline-block mx-2"
-              >
-                💰
-              </motion.span>
+              <span className="inline-block mr-2">🎲</span>
+              From guessing →<span className="inline-block mx-2">💰</span>
               profit
             </motion.div>
 
@@ -151,13 +142,8 @@ export default function HomePage() {
               animate={isHeroInView ? { y: 0, opacity: 1 } : {}}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              <motion.div
-                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0, 212, 255, 0.5)" }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg rounded-lg transition-all duration-300 group"
-                >
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block">
+                <Button className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg rounded-lg transition-all duration-300 group">
                   Get Started
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
@@ -213,31 +199,30 @@ export default function HomePage() {
               </motion.div>
             </div>
           </motion.div>
-        </motion.div>{" "}
-        {/* Closing tag for motion.div */}
-        {/* Floating particles */}
-        {[...Array(5)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-[#00D4FF] rounded-full opacity-20"
-            animate={{
-              y: [0, -100, 0],
-              x: [0, Math.random() * 100 - 50, 0],
-              opacity: [0.2, 0.8, 0.2],
-            }}
-            transition={{
-              duration: 4 + Math.random() * 2,
-              repeat: Number.POSITIVE_INFINITY,
-              delay: Math.random() * 2,
-            }}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-          />
-        ))}
-      </section>{" "}
-      {/* Closing tag for section */}
+        </motion.div>
+        {/* Floating particles - only render on client to avoid hydration mismatch */}
+        {isClient &&
+          particlePositions.map((position, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-[#00D4FF] rounded-full opacity-20"
+              animate={{
+                y: [0, -100, 0],
+                x: [0, 50 - i * 25, 0],
+                opacity: [0.2, 0.8, 0.2],
+              }}
+              transition={{
+                duration: 4 + i * 0.5,
+                repeat: Number.POSITIVE_INFINITY,
+                delay: i * 0.5,
+              }}
+              style={{
+                left: `${position.left}%`,
+                top: `${position.top}%`,
+              }}
+            />
+          ))}
+      </section>
       {/* Problem Statement */}
       <section className="px-8 py-20">
         <div className="max-w-6xl mx-auto">
@@ -248,9 +233,9 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <blockquote className="text-3xl lg:text-4xl font-bold mb-8 leading-relaxed">
-              &quot;<AnimatedCounter end={18000} /> games launched on Steam in 2024 🎮. Most failed due to poor pricing
-              decisions, not bad gameplay 💔&quot;
+            <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-8 leading-relaxed">
+              "<AnimatedCounter end={18000} /> games launched on Steam in 2024 🎮. Most failed due to poor pricing
+              decisions, not bad gameplay 💔"
             </blockquote>
           </motion.div>
 
@@ -335,7 +320,7 @@ export default function HomePage() {
       </section>
       {/* Features List */}
       <section ref={featuresRef} className="px-8 py-20">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <motion.h2
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
@@ -346,67 +331,76 @@ export default function HomePage() {
             How PriceValve Powers Your Success 🚀
           </motion.h2>
 
-          <div className="space-y-12">
-            {[
-              {
-                emoji: "🎯",
-                title: "PRICING INTELLIGENCE",
-                description: "Get optimal price points with confidence scores 💯",
-                arrow: "Stop guessing prices, start hitting revenue targets",
-              },
-              {
-                emoji: "🕵️",
-                title: "COMPETITOR ANALYSIS",
-                description: "Track similar games and market positioning 📊",
-                arrow: "Know what competitors charge and position yourself to win",
-              },
-              {
-                emoji: "📈",
-                title: "MARKET INSIGHTS",
-                description: "Understand player behavior and market trends 🌟",
-                arrow: "Make decisions based on real data, not assumptions",
-              },
-              {
-                emoji: "🚀",
-                title: "LAUNCH TIMING",
-                description: "Identify perfect windows for releases and sales ⭐",
-                arrow: "Launch when your audience is most engaged",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                className="flex items-start space-x-6 py-6 border-b border-white/10 last:border-b-0 hover:bg-white/5 transition-all duration-300 rounded-lg px-4 group cursor-pointer"
-                initial={{ y: 50, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{
-                  scale: 1.02,
-                  boxShadow: "0 10px 30px rgba(0, 212, 255, 0.1)",
-                }}
-              >
-                <motion.div
-                  className="text-4xl"
-                  whileHover={{
-                    scale: 1.2,
-                    rotate: [0, -10, 10, 0],
-                  }}
-                  transition={{ type: "spring", stiffness: 400 }}
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Column 1 */}
+            <div className="space-y-12">
+              {[
+                {
+                  emoji: "🎯",
+                  title: "PRICING INTELLIGENCE",
+                  description: "Get optimal price points with confidence scores 💯",
+                  arrow: "Stop guessing prices, start hitting revenue targets",
+                },
+                {
+                  emoji: "🕵️",
+                  title: "COMPETITOR ANALYSIS",
+                  description: "Track similar games and market positioning 📊",
+                  arrow: "Know what competitors charge and position yourself to win",
+                },
+              ].map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-start space-x-6 py-6 border-b border-white/10 last:border-b-0 hover:bg-white/5 transition-all duration-200 rounded-lg px-4 group cursor-pointer hover:scale-[1.02] hover:shadow-lg hover:shadow-[#00D4FF]/10"
                 >
-                  {feature.emoji}
-                </motion.div>
-                <div className="flex-1">
-                  <motion.h3 className="text-2xl font-bold mb-2" whileHover={{ color: "#00D4FF" }}>
-                    {feature.title}
-                  </motion.h3>
-                  <p className="text-lg text-gray-300 mb-2 leading-relaxed">{feature.description}</p>
-                  <motion.p className="text-[#00D4FF] italic flex items-center" whileHover={{ x: 10 }}>
-                    <ArrowRight className="w-4 h-4 mr-2" />
-                    {feature.arrow}
-                  </motion.p>
+                  <div className="text-4xl">{feature.emoji}</div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold mb-2 group-hover:text-[#00D4FF] transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-lg text-gray-300 mb-2 leading-relaxed">{feature.description}</p>
+                    <p className="text-[#00D4FF] italic flex items-center group-hover:translate-x-2 transition-transform">
+                      <ArrowRight className="w-4 h-4 mr-2" />
+                      {feature.arrow}
+                    </p>
+                  </div>
                 </div>
-              </motion.div>
-            ))}
+              ))}
+            </div>
+
+            {/* Column 2 */}
+            <div className="space-y-12">
+              {[
+                {
+                  emoji: "📈",
+                  title: "MARKET INSIGHTS",
+                  description: "Understand player behavior and market trends 🌟",
+                  arrow: "Make decisions based on real data, not assumptions",
+                },
+                {
+                  emoji: "🚀",
+                  title: "LAUNCH TIMING",
+                  description: "Identify perfect windows for releases and sales ⭐",
+                  arrow: "Launch when your audience is most engaged",
+                },
+              ].map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-start space-x-6 py-6 border-b border-white/10 last:border-b-0 hover:bg-white/5 transition-all duration-200 rounded-lg px-4 group cursor-pointer hover:scale-[1.02] hover:shadow-lg hover:shadow-[#00D4FF]/10"
+                >
+                  <div className="text-4xl">{feature.emoji}</div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold mb-2 group-hover:text-[#00D4FF] transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-lg text-gray-300 mb-2 leading-relaxed">{feature.description}</p>
+                    <p className="text-[#00D4FF] italic flex items-center group-hover:translate-x-2 transition-transform">
+                      <ArrowRight className="w-4 h-4 mr-2" />
+                      {feature.arrow}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -453,23 +447,9 @@ export default function HomePage() {
                 viewport={{ once: true }}
                 whileHover={{ y: -10 }}
               >
-                <motion.div
-                  className="bg-[#00D4FF] w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-black mx-auto mb-6 relative"
-                  whileHover={{
-                    scale: 1.1,
-                    boxShadow: "0 0 30px rgba(0, 212, 255, 0.6)",
-                  }}
-                  animate={{
-                    boxShadow: [
-                      "0 0 20px rgba(0, 212, 255, 0.3)",
-                      "0 0 40px rgba(0, 212, 255, 0.6)",
-                      "0 0 20px rgba(0, 212, 255, 0.3)",
-                    ],
-                  }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, delay: index * 0.5 }}
-                >
+                <div className="bg-[#00D4FF] w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-black mx-auto mb-6 relative">
                   {step.number}
-                </motion.div>
+                </div>
                 <h3 className="text-2xl font-bold mb-4">{step.title}</h3>
                 <p className="text-gray-300 text-lg leading-relaxed">{step.description}</p>
               </motion.div>
@@ -488,13 +468,6 @@ export default function HomePage() {
             className="text-5xl font-bold mb-6"
           >
             Ready to Level Up Your Revenue?
-            <motion.span
-              className="inline-block ml-4"
-              animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 2 }}
-            >
-              🎮➡️💰
-            </motion.span>
           </motion.h2>
 
           <motion.p
@@ -514,17 +487,9 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <motion.div
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 0 30px rgba(0, 212, 255, 0.5)",
-              }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg group"
-              >
-                Start Free Analysis
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block">
+              <Button className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg group">
+                Sign Up Now
                 <motion.span
                   className="ml-2"
                   animate={{ x: [0, 5, 0] }}
