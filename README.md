@@ -88,70 +88,260 @@ Aggregation pipelines will support:
 
 ## 🧠 LLM Explanation Engine
 
-Every pricing recommendation is paired with a generated “why”:
-> “Recent reviews remain positive, and similar indie titles raised prices after week 2. Suggest increasing price by 10%.”
+Every pricing recommendation is paired with a generated "why":
+> "Recent reviews remain positive, and similar indie titles raised prices after week 2. Suggest increasing price by 10%."
 
 - Gemini will be used for summarizing reviews and generating rationales.
 
 ---
 
-
-
-```
-PriceWaveAI/
-│
-├── ingestion/                     # Data collection and scraping
-│   ├── steam_game_data.py
-│   ├── review_scraper.py
-│   └── wishlist_tracker.py
-│
-├── processing/                    # Data cleaning and feature engineering
-│   ├── clean_reviews.py
-│   ├── clean_prices.py
-│   └── feature_engineering.py
-│
-├── analysis/                      # Core analytics and ML logic
-│   ├── sentiment/
-│   │   ├── sentiment_model.py
-│   │   └── sentiment_utils.py
-│   │
-│   ├── forecasting/
-│   │   ├── arima_model.py
-│   │   ├── sales_forecast.py
-│   │   └── cosine_similarity.py
-│   │
-│   ├── pricing/
-│   │   ├── trigger_engine.py
-│   │   ├── elasticity_model.py
-│   │   └── recommendation_engine.py
-│
-├── llm/
-│   ├── review_summarizer.py
-│   └── pricing_explainer.py
-│
-├── database/                      # MongoDB schema and access layer
-│   ├── mongo_connector.py
-│   ├── schema_definition.md
-│   └── aggregation_queries.py
-│
-├── dashboard/                     # Developer-facing web UI
-│   ├── app.py
-│   ├── charts.py
-│   └── components/
-│
-├── config/                        # Configuration files
-│   └── config.yaml
-│
-├── utils/                         # Utility scripts
-│   ├── logger.py
-│   └── time_utils.py
-│
-├── tests/                         # Unit and integration tests
-│   ├── test_sentiment.py
-│   ├── test_forecasting.py
-│   └── test_pricing.py
-│
-└── README.md                      # Project overview and documentation
-
+## 🏗️ Project Structure
 
 ```
+PriceWave/
+├── frontend/                 # Next.js 15 frontend application
+│   ├── src/
+│   │   ├── app/             # Next.js App Router
+│   │   └── utils/           # Utility functions and API client
+│   ├── package.json
+│   └── env.example          # Frontend environment variables
+├── backend/                  # Express.js API server
+│   ├── src/
+│   │   ├── routes/          # API route handlers
+│   │   ├── services/        # Business logic and external API calls
+│   │   ├── middleware/      # Express middleware
+│   │   ├── models/          # Data models (if using database)
+│   │   └── utils/           # Utility functions
+│   ├── package.json
+│   └── env.example          # Backend environment variables
+└── package.json             # Root package.json for managing both apps
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Steam Web API Key (optional, for enhanced features)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd PriceWave
+   ```
+
+2. **Install all dependencies**
+   ```bash
+   npm run install:all
+   ```
+
+3. **Set up environment variables**
+   
+   **Backend:**
+   ```bash
+   cd backend
+   cp env.example .env
+   # Edit .env with your configuration
+   ```
+   
+   **Frontend:**
+   ```bash
+   cd frontend
+   cp env.example .env.local
+   # Edit .env.local with your configuration
+   ```
+
+4. **Start development servers**
+   ```bash
+   npm run dev
+   ```
+
+This will start both the frontend (http://localhost:3000) and backend (http://localhost:3001) servers concurrently.
+
+## 🔧 Environment Variables
+
+### Backend (.env)
+
+```env
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+
+# Frontend URL (for CORS)
+FRONTEND_URL=http://localhost:3000
+
+# Steam Web API
+STEAM_API_KEY=your_steam_api_key_here
+
+# Database Configuration (if using MongoDB)
+MONGODB_URI=mongodb://localhost:27017/pricewave
+
+# Redis Configuration (if using Redis)
+REDIS_URL=redis://localhost:6379
+
+# JWT Secret (for authentication)
+JWT_SECRET=your_jwt_secret_here
+
+# Optional: Logging
+LOG_LEVEL=info
+```
+
+### Frontend (.env.local)
+
+```env
+# API Configuration
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+
+# Steam Web API (if needed on frontend)
+NEXT_PUBLIC_STEAM_API_KEY=your_steam_api_key_here
+
+# Optional: Analytics
+NEXT_PUBLIC_GA_ID=your_google_analytics_id_here
+```
+
+## 🎮 Steam Web API Integration
+
+The backend includes comprehensive Steam Web API integration with the following endpoints:
+
+### Available API Endpoints
+
+- `GET /api/steam/game/:appId` - Get game details by Steam App ID
+- `GET /api/steam/user/:steamId` - Get user profile by Steam ID
+- `GET /api/steam/price/:appId` - Get price data for a game
+- `POST /api/steam/games` - Get multiple games by their app IDs
+- `GET /api/steam/search?q=query` - Search for games (placeholder)
+
+### Getting a Steam Web API Key
+
+1. Visit [Steam Community](https://steamcommunity.com/dev/apikey)
+2. Sign in with your Steam account
+3. Accept the terms and generate an API key
+4. Add the key to your backend `.env` file
+
+## 📝 Available Scripts
+
+### Root Level
+- `npm run dev` - Start both frontend and backend in development mode
+- `npm run build` - Build both frontend and backend for production
+- `npm run start` - Start both frontend and backend in production mode
+- `npm run install:all` - Install dependencies for all packages
+- `npm run clean` - Clean all node_modules and build artifacts
+- `npm run lint` - Run linting for both frontend and backend
+
+### Frontend Only
+- `npm run dev:frontend` - Start frontend development server
+- `npm run build:frontend` - Build frontend for production
+- `npm run start:frontend` - Start frontend production server
+
+### Backend Only
+- `npm run dev:backend` - Start backend development server
+- `npm run build:backend` - Build backend for production
+- `npm run start:backend` - Start backend production server
+
+## 🛠️ Development
+
+### Backend Development
+
+The backend is built with:
+- **Express.js** - Web framework
+- **TypeScript** - Type safety
+- **Axios** - HTTP client for Steam API calls
+- **CORS** - Cross-origin resource sharing
+- **dotenv** - Environment variable management
+
+### Frontend Development
+
+The frontend is built with:
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **React Query** - Data fetching and caching
+- **Zustand** - State management
+
+## 🔍 API Documentation
+
+### Health Check
+```bash
+GET /health
+```
+Returns server status and timestamp.
+
+### Steam Game Details
+```bash
+GET /api/steam/game/730
+```
+Returns details for Counter-Strike 2 (App ID: 730).
+
+### Steam User Profile
+```bash
+GET /api/steam/user/76561198000000000
+```
+Returns profile information for a Steam user.
+
+### Game Price Data
+```bash
+GET /api/steam/price/730
+```
+Returns current price information for a game.
+
+### Multiple Games
+```bash
+POST /api/steam/games
+Content-Type: application/json
+
+{
+  "appIds": [730, 570, 440]
+}
+```
+Returns details for multiple games (max 50 per request).
+
+## 🚀 Deployment
+
+### Backend Deployment
+
+1. Build the backend:
+   ```bash
+   cd backend
+   npm run build
+   ```
+
+2. Set production environment variables
+3. Start the server:
+   ```bash
+   npm start
+   ```
+
+### Frontend Deployment
+
+1. Build the frontend:
+   ```bash
+   cd frontend
+   npm run build
+   ```
+
+2. Set production environment variables
+3. Start the server:
+   ```bash
+   npm start
+   ```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the ISC License.
+
+## 🆘 Support
+
+If you encounter any issues or have questions, please open an issue on GitHub.
+
+
