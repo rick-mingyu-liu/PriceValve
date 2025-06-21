@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { steamApiService } from '../services/steamApi';
 import SteamSpyApiService from '../services/steamSpyApi';
+import GameService from '../services/gameService';
 import { SteamSpyGameAnalysis, SteamSpyPriceAnalysis, SteamSpyPlayerAnalysis, SteamSpyMarketAnalysis, SteamSpyReviewAnalysis, SteamSpyTag } from '../types/steamSpy';
 
 /**
@@ -26,7 +27,28 @@ class GameController {
     console.log(`🔍 Starting analysis for app ID: ${appId}`);
 
     try {
-      // Fetch data from both APIs concurrently
+      // Check if we have recent data in database (within 24 hours)
+      const existingGame = await GameService.getGameByAppId(appId);
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      
+      if (existingGame && existingGame.lastAnalyzed > twentyFourHoursAgo) {
+        console.log(`📊 Using cached data for ${existingGame.name} (${appId})`);
+        
+        res.json({
+          success: true,
+          data: this.transformGameToAnalysis(existingGame),
+          metadata: {
+            appId: appId,
+            analyzedAt: existingGame.lastAnalyzed.toISOString(),
+            dataSources: existingGame.dataSources,
+            cached: true,
+            analysisCount: existingGame.analysisCount
+          }
+        });
+        return;
+      }
+
+      // Fetch fresh data from APIs
       const [steamResult, steamSpyResult] = await Promise.allSettled([
         steamApiService.getAppDetails(appId),
         SteamSpyApiService.getAppDetails(appId)
@@ -35,11 +57,13 @@ class GameController {
       // Handle Steam API response
       if (steamResult.status === 'rejected') {
         console.error('Steam API error:', steamResult.reason);
+        await GameService.updateGameError(appId, 'steam', steamResult.reason.message);
       }
 
       // Handle SteamSpy API response
       if (steamSpyResult.status === 'rejected') {
         console.error('SteamSpy API error:', steamSpyResult.reason);
+        await GameService.updateGameError(appId, 'steamSpy', steamSpyResult.reason.message);
       }
 
       const steamData = steamResult.status === 'fulfilled' ? steamResult.value : null;
@@ -58,6 +82,14 @@ class GameController {
       // Perform comprehensive analysis
       const analysis = await this.performGameAnalysis(appId, steamData, steamSpyData);
 
+      // Save to database
+      const savedGame = await GameService.saveGameData(
+        appId, 
+        analysis, 
+        steamData?.data, 
+        steamSpyData?.data
+      );
+
       console.log(`✅ Analysis completed for ${analysis.name} (${appId})`);
 
       res.json({
@@ -69,7 +101,9 @@ class GameController {
           dataSources: {
             steam: steamData?.success || false,
             steamSpy: steamSpyData?.success || false
-          }
+          },
+          cached: false,
+          analysisCount: savedGame.analysisCount
         }
       });
 
@@ -81,6 +115,185 @@ class GameController {
         details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
+  }
+
+  /**
+   * Get games by criteria
+   * GET /api/games
+   */
+  async getGames(req: Request, res: Response): Promise<void> {
+    try {
+      const { 
+        genre, 
+        priceRange, 
+        minScore, 
+        maxPrice, 
+        playerEngagement, 
+        marketPosition, 
+        reviewCategory,
+        search,
+        limit = 20,
+        page = 0
+      } = req.query;
+
+      const criteria: any = {};
+      if (genre) criteria.genre = genre;
+      if (priceRange) criteria.priceRange = priceRange;
+      if (minScore) criteria.minScore = parseInt(minScore as string);
+      if (maxPrice) criteria.maxPrice = parseFloat(maxPrice as string);
+      if (playerEngagement) criteria.playerEngagement = playerEngagement;
+      if (marketPosition) criteria.marketPosition = marketPosition;
+      if (reviewCategory) criteria.reviewCategory = reviewCategory;
+      if (search) criteria.search = search;
+
+      const result = await GameService.getGamesByCriteria(
+        criteria, 
+        parseInt(limit as string), 
+        parseInt(page as string) * parseInt(limit as string)
+      );
+
+      res.json({
+        success: true,
+        data: {
+          games: result.games.map(game => this.transformGameToAnalysis(game)),
+          total: result.total,
+          page: parseInt(page as string),
+          limit: parseInt(limit as string),
+          totalPages: Math.ceil(result.total / parseInt(limit as string))
+        }
+      });
+
+    } catch (error: any) {
+      console.error('Error fetching games:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch games',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+
+  /**
+   * Get top games
+   * GET /api/games/top
+   */
+  async getTopGames(req: Request, res: Response): Promise<void> {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const games = await GameService.getTopGames(limit);
+
+      res.json({
+        success: true,
+        data: games.map(game => this.transformGameToAnalysis(game))
+      });
+
+    } catch (error: any) {
+      console.error('Error fetching top games:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch top games',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+
+  /**
+   * Get best value games
+   * GET /api/games/best-value
+   */
+  async getBestValueGames(req: Request, res: Response): Promise<void> {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const games = await GameService.getBestValueGames(limit);
+
+      res.json({
+        success: true,
+        data: games.map(game => this.transformGameToAnalysis(game))
+      });
+
+    } catch (error: any) {
+      console.error('Error fetching best value games:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch best value games',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+
+  /**
+   * Get database statistics
+   * GET /api/stats
+   */
+  async getDatabaseStats(req: Request, res: Response): Promise<void> {
+    try {
+      const stats = await GameService.getDatabaseStats();
+
+      res.json({
+        success: true,
+        data: stats
+      });
+
+    } catch (error: any) {
+      console.error('Error fetching database stats:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch database stats',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+
+  /**
+   * Transform database game to analysis format
+   */
+  private transformGameToAnalysis(game: any): SteamSpyGameAnalysis {
+    return {
+      appId: game.appId,
+      name: game.name,
+      developer: game.developer || 'Unknown',
+      publisher: game.publisher || 'Unknown',
+      price: game.priceAnalysis || {
+        currentPrice: 0,
+        initialPrice: 0,
+        discount: 0,
+        priceRange: 'Unknown',
+        priceCategory: 'Mid-Range',
+        pricePerHour: 0,
+        valueScore: 0
+      },
+      players: game.playerAnalysis || {
+        averageForever: 0,
+        average2Weeks: 0,
+        medianForever: 0,
+        median2Weeks: 0,
+        currentPlayers: 0,
+        playerEngagement: 'Low',
+        retentionScore: 0
+      },
+      market: game.marketAnalysis || {
+        owners: '0 .. 20,000',
+        ownershipRange: { min: 0, max: 20000, average: 10000 },
+        marketPosition: 'Niche',
+        marketScore: 0
+      },
+      reviews: game.reviewAnalysis || {
+        scoreRank: 'Unknown',
+        reviewScore: 50,
+        reviewCategory: 'Mixed',
+        qualityScore: 50
+      },
+      tags: game.tags || [],
+      genres: game.genres || [],
+      languages: game.languages || [],
+      overallScore: game.overallScore || 0,
+      recommendations: game.recommendations || [],
+      optimalPricing: game.optimalPricing || {
+        suggestedPrice: 0,
+        confidence: 50,
+        reasoning: []
+      }
+    };
   }
 
   /**
