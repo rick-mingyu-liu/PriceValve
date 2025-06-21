@@ -19,7 +19,7 @@ declare class SteamService {
     /**
      * Search for games by name
      */
-    searchGames(query: string): Promise<SteamGame[]>;
+    searchGames(): Promise<SteamGame[]>;
     /**
      * Get multiple games by their app IDs
      */

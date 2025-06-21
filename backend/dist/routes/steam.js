@@ -355,7 +355,7 @@ router.get('/search', (req, res) => {
                 error: 'Search query is required'
             });
         }
-        const games = yield steamService_1.steamService.searchGames(q);
+        const games = yield steamService_1.steamService.searchGames();
         res.json({
             success: true,
             data: games

@@ -523,7 +523,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-8 text-center">
           <p className="text-gray-600 text-sm">
             © 2024 PriceValve |
-            {["Privacy Policy", "Contact", "Support"].map((link, index) => (
+            {["Privacy Policy", "Contact", "Support"].map((link) => (
               <motion.a
                 key={link}
                 href="#"

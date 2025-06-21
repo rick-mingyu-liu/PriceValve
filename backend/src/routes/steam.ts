@@ -393,7 +393,7 @@ router.get('/search', (req, res) => {
       } as ApiResponse);
     }
 
-    const games = await steamService.searchGames(q);
+    const games = await steamService.searchGames();
     res.json({ 
       success: true, 
       data: games 

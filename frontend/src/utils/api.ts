@@ -1,4 +1,6 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = typeof window !== 'undefined' && window.NEXT_PUBLIC_API_URL
+  ? window.NEXT_PUBLIC_API_URL
+  : 'http://localhost:3001/api';
 
 export interface SteamGame {
   appid: number;
@@ -183,4 +185,4 @@ class ApiClient {
   }
 }
 
-export const apiClient = new ApiClient(API_BASE_URL); 
+export const apiClient = new ApiClient(API_URL); 

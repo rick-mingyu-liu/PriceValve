@@ -1,6 +1,7 @@
 {
   "name": "pricewave",
   "version": "1.0.0",
+  "type": "module",
   "description": "A full-stack application for tracking Steam game prices",
   "private": true,
   "scripts": {
@@ -20,7 +21,12 @@
     "lint:backend": "cd backend && npm run lint"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.29.0",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
+    "concurrently": "^8.2.2",
+    "globals": "^16.2.0"
   },
   "keywords": [
     "steam",
@@ -31,5 +37,9 @@
     "typescript"
   ],
   "author": "",
-  "license": "ISC"
-} 
+  "license": "ISC",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
+}
