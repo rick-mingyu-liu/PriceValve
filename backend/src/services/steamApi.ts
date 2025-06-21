@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { 
   SteamAppDetails, 
-  SteamPlayerStats, 
+  // SteamPlayerStats, 
   SteamUserGames, 
   SteamAppList,
   SteamPlayerCount,

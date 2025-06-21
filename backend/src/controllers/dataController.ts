@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { dataFetchingService, FetchOptions } from '../services/dataFetchingService';
-import { Game } from '../types/game';
 
 /**
  * Data Controller for PriceValve
@@ -161,7 +160,7 @@ export class DataController {
 
       console.log(`Searching for games with query: "${query}"`);
 
-      const games = await dataFetchingService.searchGames(query, limitNum);
+      const games = await dataFetchingService.searchGames(query);
 
       res.json({
         success: true,

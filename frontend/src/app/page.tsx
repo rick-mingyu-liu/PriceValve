@@ -35,7 +35,7 @@ export default function HomePage() {
   const heroRef = useRef(null)
   const featuresRef = useRef(null)
   const isHeroInView = useInView(heroRef)
-  const isFeaturesInView = useInView(featuresRef)
+  // const isFeaturesInView = useInView(featuresRef); // Removed unused variable
 
   // Parallax effects
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -50])
@@ -78,13 +78,16 @@ export default function HomePage() {
             </motion.a>
           ))}
           <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
-            <Button
-              className="bg-transparent border border-[#00D4FF] text-[#00D4FF] hover:bg-[#00D4FF] hover:text-white px-4 py-2 text-sm"
+            <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Login
-            </Button>
+              <Button
+                className="bg-transparent border border-[#00D4FF] text-[#00D4FF] hover:bg-[#00D4FF] hover:text-white px-4 py-2 text-sm"
+              >
+                Login
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
       </motion.nav>
@@ -148,14 +151,17 @@ export default function HomePage() {
               animate={isHeroInView ? { y: 0, opacity: 1 } : {}}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              <Button
-                className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg rounded-lg transition-all duration-300 group"
+              <motion.div
                 whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(0, 212, 255, 0.5)" }}
                 whileTap={{ scale: 0.95 }}
               >
-                Get Started
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+                <Button
+                  className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg rounded-lg transition-all duration-300 group"
+                >
+                  Get Started
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </motion.div>
             </motion.div>
           </div>
 
@@ -243,8 +249,8 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <blockquote className="text-3xl lg:text-4xl font-bold mb-8 leading-relaxed">
-              "<AnimatedCounter end={18000} /> games launched on Steam in 2024 🎮. Most failed due to poor pricing
-              decisions, not bad gameplay 💔"
+              &quot;<AnimatedCounter end={18000} /> games launched on Steam in 2024 🎮. Most failed due to poor pricing
+              decisions, not bad gameplay 💔&quot;
             </blockquote>
           </motion.div>
 
@@ -508,23 +514,26 @@ export default function HomePage() {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <Button
-              className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg group"
+            <motion.div
               whileHover={{
                 scale: 1.05,
                 boxShadow: "0 0 30px rgba(0, 212, 255, 0.5)",
               }}
               whileTap={{ scale: 0.95 }}
             >
-              Start Free Analysis
-              <motion.span
-                className="ml-2"
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+              <Button
+                className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg group"
               >
-                🚀
-              </motion.span>
-            </Button>
+                Start Free Analysis
+                <motion.span
+                  className="ml-2"
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  🚀
+                </motion.span>
+              </Button>
+            </motion.div>
           </motion.div>
 
           <motion.p
@@ -549,7 +558,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-8 text-center">
           <p className="text-gray-600 text-sm">
             © 2024 PriceValve |
-            {["Privacy Policy", "Contact", "Support"].map((link, index) => (
+            {["Privacy Policy", "Contact", "Support"].map((link) => (
               <motion.a
                 key={link}
                 href="#"

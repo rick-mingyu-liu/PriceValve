@@ -95,7 +95,7 @@ class SteamService {
   /**
    * Search for games by name
    */
-  async searchGames(query: string): Promise<SteamGame[]> {
+  async searchGames(): Promise<SteamGame[]> {
     try {
       // Note: Steam doesn't have a direct search API, so we'll use a workaround
       // This would typically involve using a third-party service or scraping
@@ -117,9 +117,7 @@ class SteamService {
       const results = await Promise.allSettled(promises);
       
       return results
-        .filter((result): result is PromiseFulfilledResult<SteamGame | null> => 
-          result.status === 'fulfilled' && result.value !== null
-        )
+        .filter((result): result is PromiseFulfilledResult<SteamGame | null> => result.status === 'fulfilled' && result.value !== null)
         .map(result => result.value!);
     } catch (error) {
       console.error('Error fetching multiple games:', error);

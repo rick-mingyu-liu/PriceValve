@@ -322,7 +322,7 @@ class DataFetchingService {
   /**
    * Search for games by name
    */
-  async searchGames(query: string, limit: number = 10): Promise<Game[]> {
+  async searchGames(query: string): Promise<Game[]> {
     try {
       // This would typically use Steam's search API or SteamSpy's search
       // For now, we'll return a mock result

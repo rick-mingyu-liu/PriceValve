@@ -106,7 +106,7 @@ class SteamService {
     /**
      * Search for games by name
      */
-    searchGames(query) {
+    searchGames() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // Note: Steam doesn't have a direct search API, so we'll use a workaround
