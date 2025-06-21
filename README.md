@@ -1,134 +1,157 @@
 # 🎮 PriceWaveAI: Steam Game Pricing Intelligence System
 
-will be changed along the implementation
+
+> 💡 _This project is under iterative development. The system design and models may evolve as implementation progresses._
 
 ## 🔍 Project Scope & Objectives
 
-- **Sentiment analysis** on Steam reviews to understand player perception of pricing and value
-- **Purpose**: Determine **when** and **what price** to change to maximize revenue and player satisfaction
-- **Focus on Steam only**, narrowing the domain for clean data, relevant trends, and efficient API integration
-- Use **MongoDB** as the primary NoSQL database to store pricing, reviews, and time-series data
-- Define a **clear and extensible data model** that includes:
+PriceWaveAI empowers Steam game developers to understand how their game is performing in real time, and receive AI-powered pricing recommendations.
+
+- **Sentiment analysis** on Steam reviews to gauge perceived game value.
+- **Goal**: Determine **when** and **how much** to change game prices to maximize revenue and engagement.
+- **Steam-only** focus for clean, consistent, and relevant data.
+- **Real-time feedback** upon login: developers submit their Steam game link, and the system analyzes and updates automatically.
+- **MongoDB** is used to store flexible and versioned datasets for each game:
   - Price history
-  - Sentiment scores
-  - Review metadata
-  - Sales patterns and wishlist trends
+  - Review sentiment
+  - Cluster placement among similar games
+  - Forecasts and suggested pricing
 
 ---
+
+
 
 ## 📊 Modeling & Forecasting
 
-- **Forecasting methods** to estimate demand and revenue:
-  - Use **calculus** (e.g., marginal revenue optimization via derivatives) to find optimal price points
-  - **Cosine similarity** for comparing sentiment or price trajectories with historical high-performing games
-- Integrate **ARIMA or exponential smoothing** for temporal price/sales forecasting
-- Use **Fourier analysis** to detect cyclical patterns in sentiment or sales over weeks/months
+The system will integrate both heuristic and machine learning techniques:
+
+- **Price elasticity modeling** via calculus and regression.
+- **Cosine similarity** to find and analyze similar games.
+- **ARIMA or exponential smoothing** for sales/sentiment trends.
+- **Fourier analysis** to detect seasonal/cyclical signals.
+- **ML price classifiers** and regressors to generate predictive suggestions based on historical Steam game data.
 
 ---
+
 
 ## 🧠 Sentiment & Review Analysis
 
-- Perform **sentiment analysis** using:
-  - VADER or TextBlob for lightweight polarity scoring
-  - Hugging Face Transformers (e.g., `distilbert-base-uncased`) for deeper context
-- Track **common review themes** (e.g., “overpriced”, “great value”, “wait for sale”)
-- Use sentiment **deltas over time** to flag sudden sentiment drops or hype bursts
+- Analyze reviews using:
+  - VADER/TextBlob for fast analysis
+  - Hugging Face Transformers (e.g. `distilbert-base-uncased`) for richer context
+- Detect price-related themes like "expensive", "good value", "wait for sale"
+- Track **weekly sentiment deltas** to detect rising/falling perception
 
 ---
 
+
 ## 🔗 API & Tooling
 
-- Use **Gemini API (Google)** for:
-  - Summarizing large volumes of reviews into qualitative insights
-  - Generating natural-language explanations for price recommendations
-- Use **Steam Web API** and **SteamSpy API** for:
-  - Pulling price, sales, and game metadata
-  - Fetching user reviews with timestamps
-- Set up **automated scraping** pipelines for missing data fields not exposed via API
+- **Steam Web API** and **SteamSpy API** for:
+  - Game metadata
+  - Pricing and review trends
+  - Similar game grouping
+- **Gemini API (LLM)**:
+  - Summarize large volumes of reviews
+  - Generate natural language explanations for pricing recommendations
+- **Automated scraping** may be added for unsupported metadata
 
 ---
 
 ## 📚 Database Design (MongoDB)
 
-- Use **flexible JSON documents** to store unstructured review data and nested price histories
-- Create indexed fields for:
-  - `game_id`, `review_date`, `sentiment_score`, `price`, `sales_volume`
-- Enable aggregation pipelines for weekly/monthly trend analysis
+Flexible and indexed schema for:
+- `game_id`, `price`, `review_score`, `review_date`, `sentiment_score`
+- Historical price actions and review context
+- Clustering group for benchmarking
+- LLM-generated rationale for decisions
+
+Aggregation pipelines will support:
+- Weekly sentiment summaries
+- Review keyword trending
+- Forecasted revenue deltas
 
 ---
 
-## ⚙️ Pricing Logic & Triggers
+## ⚙️ Pricing Logic & ML Triggers
 
-- Develop **rule-based pricing triggers**, e.g.:
-  - Drop price if: sentiment < 0.4 AND sales drop by 30%
-  - Raise price if: sentiment > 0.8 AND wishlist adds spike
-- Experiment with **multi-armed bandit testing** to evaluate multiple pricing strategies in parallel
+- Initial rule-based engine:
+  - Drop price if: sentiment < 0.4 AND sales drop 30%
+  - Raise price if: sentiment > 0.8 AND wishlist count surges
+- ML phase:
+  - Train classifier to recommend: `raise`, `lower`, `hold`
+  - Use regressors to predict optimal price for revenue maximization
+  - Forecast revenue deltas for confidence metrics
 
 ---
 
-## 📈 Analytics Dashboard (Optional)
 
-- Build visualizations to display:
-  - Price history vs sentiment trend
-  - Sales and wishlist over time
-  - Triggered price recommendations and supporting rationale
+## 🧠 LLM Explanation Engine
 
+Every pricing recommendation is paired with a generated “why”:
+> “Recent reviews remain positive, and similar indie titles raised prices after week 2. Suggest increasing price by 10%.”
+
+- Gemini will be used for summarizing reviews and generating rationales.
+
+---
 
 
 
 ```
 PriceWaveAI/
 │
-├── data_ingestion/                # Data collection from Steam and related sources
-│   ├── steam_game_data.py         # Game metadata, price history, reviews
-│   ├── review_scraper.py          # Steam review scraping or API wrapper
-│   └── wishlist_tracker.py        # Wishlist & sales activity (if available)
+├── ingestion/                     # Data collection and scraping
+│   ├── steam_game_data.py
+│   ├── review_scraper.py
+│   └── wishlist_tracker.py
 │
-├── data_processing/               # Data cleaning, transformation, and feature extraction
+├── processing/                    # Data cleaning and feature engineering
 │   ├── clean_reviews.py
 │   ├── clean_prices.py
-│   └── feature_engineering.py     # Add sentiment scores, trend features, etc.
+│   └── feature_engineering.py
 │
-├── sentiment_analysis/           # NLP models for review sentiment
-│   ├── sentiment_model.py         # VADER/TextBlob/HuggingFace pipeline
-│   └── sentiment_utils.py         # Preprocessing & interpretation helpers
+├── analysis/                      # Core analytics and ML logic
+│   ├── sentiment/
+│   │   ├── sentiment_model.py
+│   │   └── sentiment_utils.py
+│   │
+│   ├── forecasting/
+│   │   ├── arima_model.py
+│   │   ├── sales_forecast.py
+│   │   └── cosine_similarity.py
+│   │
+│   ├── pricing/
+│   │   ├── trigger_engine.py
+│   │   ├── elasticity_model.py
+│   │   └── recommendation_engine.py
 │
-├── forecasting/                  # Time series modeling & demand forecasting
-│   ├── arima_model.py
-│   ├── sales_forecast.py
-│   └── cosine_similarity.py       # Compare sales/sentiment trajectories
+├── llm/
+│   ├── review_summarizer.py
+│   └── pricing_explainer.py
 │
-├── pricing_logic/                # Rules and intelligence for pricing decisions
-│   ├── trigger_engine.py          # “When” and “how much” to adjust price
-│   ├── elasticity_model.py        # Calculus-based demand response modeling
-│   └── recommendation_engine.py   # Combines rules, forecasts, sentiment
+├── database/                      # MongoDB schema and access layer
+│   ├── mongo_connector.py
+│   ├── schema_definition.md
+│   └── aggregation_queries.py
 │
-├── gemini_api/                   # Integration with Gemini or LLM APIs
-│   ├── review_summarizer.py       # LLM-powered review summarization
-│   └── pricing_explainer.py       # Generate explanations for price suggestions
-│
-├── database/                     # MongoDB schema, connectors, and queries
-│   ├── mongo_connector.py         # Insert/query/update logic
-│   ├── schema_definition.md       # Documented schema for game, review, pricing
-│   └── aggregation_queries.py     # Common reporting/analysis pipelines
-│
-├── dashboard/                    # (Optional) Visualization and reporting interface
+├── dashboard/                     # Developer-facing web UI
 │   ├── app.py
 │   ├── charts.py
 │   └── components/
 │
-├── config/                       # Configuration and constants
+├── config/                        # Configuration files
 │   └── config.yaml
 │
-├── utils/                        # General utility scripts
+├── utils/                         # Utility scripts
 │   ├── logger.py
 │   └── time_utils.py
 │
-├── tests/                        # Unit and integration tests
+├── tests/                         # Unit and integration tests
 │   ├── test_sentiment.py
 │   ├── test_forecasting.py
 │   └── test_pricing.py
 │
-└── README.md                     # Project documentation and overview
+└── README.md                      # Project overview and documentation
+
 
 ```
