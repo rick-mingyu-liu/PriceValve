@@ -1,10 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import apiRoutes from './routes/apiRoutes';
 import { connectDatabase } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
-
+import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 

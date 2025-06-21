@@ -18,29 +18,6 @@ export function isValidSteamAppId(appId: number): boolean {
 }
 
 /**
- * Validate Steam User ID
- */
-export function isValidSteamUserId(steamId: string): boolean {
-  // Steam IDs are typically 17-digit numbers
-  return /^\d{17}$/.test(steamId);
-}
-
-/**
- * Format price from Steam API (cents to dollars)
- */
-export function formatPrice(priceInCents: number): string {
-  return `$${(priceInCents / 100).toFixed(2)}`;
-}
-
-/**
- * Calculate discount percentage
- */
-export function calculateDiscount(originalPrice: number, finalPrice: number): number {
-  if (originalPrice === 0) return 0;
-  return Math.round(((originalPrice - finalPrice) / originalPrice) * 100);
-}
-
-/**
  * Sanitize search query
  */
 export function sanitizeSearchQuery(query: string): string {
@@ -70,16 +47,4 @@ export function validateAppIds(appIds: number[]): { valid: boolean; error?: stri
   }
   
   return { valid: true };
-}
-
-/**
- * Generate a random string for testing
- */
-export function generateRandomString(length: number = 8): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
 } 

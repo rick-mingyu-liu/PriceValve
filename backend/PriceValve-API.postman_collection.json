@@ -11,10 +11,10 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:5000/api/health",
+          "raw": "http://localhost:5001/api/health",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "5000",
+          "port": "5001",
           "path": ["api", "health"]
         }
       }
@@ -31,13 +31,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"type\": \"single\",\n  \"appId\": 730,\n  \"includeReviews\": true,\n  \"includePlayerCount\": true,\n  \"includeSalesHistory\": true\n}"
+          "raw": "{\n  \"type\": \"single\",\n  \"appId\": 730,\n  \"includeReviews\": true,\n  \"includeSalesHistory\": true,\n  \"uploadToDb\": true\n}"
         },
         "url": {
-          "raw": "http://localhost:5000/api/fetch",
+          "raw": "http://localhost:5001/api/fetch",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "5000",
+          "port": "5001",
           "path": ["api", "fetch"]
         }
       }
@@ -54,13 +54,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"type\": \"multiple\",\n  \"appIds\": [730, 570, 440],\n  \"includeReviews\": true,\n  \"includeSalesHistory\": true\n}"
+          "raw": "{\n  \"type\": \"multiple\",\n  \"appIds\": [730, 570, 440],\n  \"includeReviews\": true,\n  \"includeSalesHistory\": true,\n  \"uploadToDb\": true\n}"
         },
         "url": {
-          "raw": "http://localhost:5000/api/fetch",
+          "raw": "http://localhost:5001/api/fetch",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "5000",
+          "port": "5001",
           "path": ["api", "fetch"]
         }
       }
@@ -77,13 +77,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"type\": \"trending\",\n  \"limit\": 10\n}"
+          "raw": "{\n  \"type\": \"trending\",\n  \"limit\": 10,\n  \"includeReviews\": true,\n  \"uploadToDb\": true\n}"
         },
         "url": {
-          "raw": "http://localhost:5000/api/fetch",
+          "raw": "http://localhost:5001/api/fetch",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "5000",
+          "port": "5001",
           "path": ["api", "fetch"]
         }
       }
@@ -100,13 +100,59 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"type\": \"search\",\n  \"query\": \"counter-strike\",\n  \"limit\": 5\n}"
+          "raw": "{\n  \"type\": \"search\",\n  \"query\": \"counter-strike\",\n  \"limit\": 5,\n  \"includeReviews\": true,\n  \"uploadToDb\": true\n}"
         },
         "url": {
-          "raw": "http://localhost:5000/api/fetch",
+          "raw": "http://localhost:5001/api/fetch",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "5000",
+          "port": "5001",
+          "path": ["api", "fetch"]
+        }
+      }
+    },
+    {
+      "name": "Fetch Games by Genre",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"genre\",\n  \"query\": \"Action\",\n  \"limit\": 10,\n  \"includeReviews\": true,\n  \"uploadToDb\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/fetch",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["api", "fetch"]
+        }
+      }
+    },
+    {
+      "name": "Fetch Games by Tag",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"tag\",\n  \"query\": \"Multiplayer\",\n  \"limit\": 10,\n  \"includeReviews\": true,\n  \"uploadToDb\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/fetch",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
           "path": ["api", "fetch"]
         }
       }
@@ -117,10 +163,10 @@
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "http://localhost:5000/api/cache",
+          "raw": "http://localhost:5001/api/cache",
           "protocol": "http",
           "host": ["localhost"],
-          "port": "5000",
+          "port": "5001",
           "path": ["api", "cache"]
         }
       }

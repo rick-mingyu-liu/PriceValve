@@ -1,141 +1,330 @@
-# PriceValve API - Simple & Clean
+# PriceValve API Documentation
 
-## 🚀 Quick Start
+## Overview
 
-```bash
-cd backend
-npm install
-npm run dev
-```
+PriceValve API is a comprehensive game data service that fetches information from SteamSpy and Steam Review APIs, processes the data, and stores it in MongoDB for analysis and optimization purposes.
 
-## 📊 API Endpoints
+## Architecture
 
-### 1. **POST /api/fetch** - Main Endpoint
-This is the **only endpoint you need** for fetching data!
+The API now uses two main data sources:
+- **SteamSpy API**: Provides ownership data, playtime statistics, pricing information, and game metadata
+- **Steam Review API**: Provides review scores, ratings, and user feedback
 
-**Request Body:**
-```json
-{
-  "type": "single|multiple|trending|search",
-  "appId": 730,                    // For single game
-  "appIds": [730, 570, 440],       // For multiple games
-  "query": "counter-strike",       // For search
-  "limit": 20,                     // For trending/search
-  "includeReviews": true,          // Optional
-  "includePlayerCount": true,      // Optional
-  "includeSalesHistory": true      // Optional
+## Data Model
+
+### Game Object Structure
+
+```typescript
+interface Game {
+  appId: number;                    // Steam Application ID
+  name: string;                     // Game name
+  isFree: boolean;                  // Whether the game is free
+  price: number;                    // Current price in USD
+  discountPercent?: number;         // Current discount percentage
+  releaseDate?: string;             // Release date
+  developer?: string;               // Developer name
+  publisher?: string;               // Publisher name
+  tags: string[];                   // Game tags/genres
+
+  // SteamSpy Data
+  owners?: string;                  // Ownership range (e.g., "1,000,000 .. 2,000,000")
+  averagePlaytime?: number;         // Average playtime in minutes
+
+  // Steam Review Data
+  reviewScore?: number;             // Review score (1-100)
+  reviewScoreDesc?: string;         // Review description (e.g., "Very Positive")
+  totalReviews?: number;            // Total number of reviews
+  totalPositive?: number;           // Number of positive reviews
+  totalNegative?: number;           // Number of negative reviews
+
+  // Sales History
+  salesHistory: SalesDataPoint[];   // Historical sales data
+}
+
+interface SalesDataPoint {
+  date: string;                     // ISO date
+  owners: number;                   // Estimated owners
+  revenue?: number;                 // Estimated revenue
+  volumeChange?: number;            // Change in ownership
 }
 ```
 
-### 2. **GET /api/health** - Health Check
-Check if the API is running and APIs are working.
+## API Endpoints
 
-### 3. **DELETE /api/cache** - Clear Cache
-Clear the data cache.
+### Main Data Fetching Endpoint
 
-## 🎮 Examples
+**POST** `/api/fetch`
 
-### Fetch Single Game (CS2)
+This is the main endpoint that handles all data fetching operations. It can fetch single games, multiple games, trending games, search results, and more.
+
+#### Request Body
+
+```json
+{
+  "type": "single|multiple|trending|search|genre|tag",
+  "appId": 730,                    // Required for single game
+  "appIds": [730, 570, 440],       // Required for multiple games
+  "query": "Counter-Strike",       // Required for search/genre/tag
+  "includeReviews": true,          // Include review data
+  "includeSalesHistory": true,     // Include sales history
+  "uploadToDb": true,              // Upload to MongoDB
+  "limit": 20                      // Limit results
+}
+```
+
+#### Response Format
+
+```json
+{
+  "success": true,
+  "data": {
+    "name": "Counter-Strike 2",
+    "appId": 730,
+    "price": 0,
+    "isFree": true,
+    "reviewScore": 85,
+    "reviewScoreDesc": "Very Positive",
+    "owners": "50,000,000 .. 100,000,000",
+    "averagePlaytime": 1200,
+    "tags": ["FPS", "Multiplayer", "Action"],
+    "salesHistory": [...]
+  },
+  "gameId": "mongodb_id_here",
+  "isNew": false,
+  "sources": {
+    "steamSpy": true,
+    "steamReview": true
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "message": "Game data fetched and uploaded successfully"
+}
+```
+
+### Health Check
+
+**GET** `/api/health`
+
+Returns the health status of all services.
+
+#### Response
+
+```json
+{
+  "success": true,
+  "status": "healthy",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "services": {
+    "dataFetching": true,
+    "mongoUpload": true,
+    "steamSpy": true,
+    "steamReview": true
+  },
+  "stats": {
+    "uploadStats": {
+      "totalGames": 1500,
+      "activeGames": 1450,
+      "lastUpload": "2024-01-15T10:25:00.000Z",
+      "averageAnalysisCount": 3.2
+    },
+    "cacheStats": {
+      "size": 50,
+      "entries": [...]
+    }
+  },
+  "message": "All services are operational"
+}
+```
+
+### Clear Cache
+
+**DELETE** `/api/cache`
+
+Clears all internal caches.
+
+#### Response
+
+```json
+{
+  "success": true,
+  "message": "All caches cleared successfully",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+## Usage Examples
+
+### Fetch a Single Game
+
 ```bash
-curl -X POST http://localhost:5000/api/fetch \
+curl -X POST http://localhost:3000/api/fetch \
   -H "Content-Type: application/json" \
   -d '{
     "type": "single",
     "appId": 730,
     "includeReviews": true,
-    "includeSalesHistory": true
+    "includeSalesHistory": true,
+    "uploadToDb": true
+  }'
+```
+
+### Fetch Trending Games
+
+```bash
+curl -X POST http://localhost:3000/api/fetch \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "trending",
+    "limit": 10,
+    "includeReviews": true,
+    "uploadToDb": true
+  }'
+```
+
+### Search for Games
+
+```bash
+curl -X POST http://localhost:3000/api/fetch \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "search",
+    "query": "RPG",
+    "limit": 5,
+    "includeReviews": true,
+    "uploadToDb": true
+  }'
+```
+
+### Fetch Games by Genre
+
+```bash
+curl -X POST http://localhost:3000/api/fetch \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "genre",
+    "query": "Action",
+    "limit": 10,
+    "includeReviews": true,
+    "uploadToDb": true
+  }'
+```
+
+### Fetch Games by Tag
+
+```bash
+curl -X POST http://localhost:3000/api/fetch \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "tag",
+    "query": "Multiplayer",
+    "limit": 10,
+    "includeReviews": true,
+    "uploadToDb": true
   }'
 ```
 
 ### Fetch Multiple Games
+
 ```bash
-curl -X POST http://localhost:5000/api/fetch \
+curl -X POST http://localhost:3000/api/fetch \
   -H "Content-Type: application/json" \
   -d '{
     "type": "multiple",
-    "appIds": [730, 570, 440],
-    "includeReviews": true
+    "appIds": [730, 570, 440, 578080],
+    "includeReviews": true,
+    "uploadToDb": true
   }'
 ```
 
-### Get Trending Games
-```bash
-curl -X POST http://localhost:5000/api/fetch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "trending",
-    "limit": 10
-  }'
-```
+## Services
 
-### Search Games
-```bash
-curl -X POST http://localhost:5000/api/fetch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "search",
-    "query": "counter-strike",
-    "limit": 5
-  }'
-```
+### Data Fetching Service
 
-## 🧪 Testing
+Handles fetching data from SteamSpy and Steam Review APIs with rate limiting and caching.
 
-### Run Tests
-```bash
-cd backend
-node test-api.js
-```
+**Key Features:**
+- Rate limiting (1 request/second for SteamSpy, 1 request/second for Steam Review)
+- Caching (5-minute cache duration)
+- Error handling and retry logic
+- Parallel data fetching from multiple sources
 
-### Postman Collection
-Import `PriceValve-API.postman_collection.json` into Postman for easy testing!
+### MongoDB Upload Service
 
-## 🎯 Popular Game IDs
+Handles uploading and updating game data in MongoDB with comprehensive analysis.
 
-| Game | App ID |
-|------|--------|
-| Counter-Strike 2 | 730 |
-| Dota 2 | 570 |
-| Team Fortress 2 | 440 |
-| Grand Theft Auto V | 271590 |
-| The Witcher 3 | 292030 |
+**Key Features:**
+- Automatic game creation/update
+- Data analysis and scoring
+- Market position analysis
+- Price optimization suggestions
+- Player engagement metrics
 
-## 📋 Response Format
+### Game Data Service
 
-All responses follow this format:
-```json
-{
-  "success": true,
-  "data": { ... },
-  "message": "Success message",
-  "sources": {
-    "steam": true,
-    "steamSpy": true
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z"
-}
-```
+Combines data fetching and MongoDB upload functionality into a single service.
 
-## 🔧 Environment Variables
+**Key Features:**
+- One-stop service for fetch-and-upload operations
+- Batch processing capabilities
+- Health monitoring
+- Statistics and reporting
 
-Create a `.env` file:
-```env
-PORT=5000
-STEAM_API_KEY=your_steam_api_key_here
-FRONTEND_URL=http://localhost:3000
-MONGODB_URI=mongodb://localhost:27017/pricevalve
-```
+## Rate Limits
 
-## 🚨 Error Handling
+- **SteamSpy API**: 1 request per second (1 request per 60 seconds for 'all' requests)
+- **Steam Review API**: 1 request per second recommended
+- **MongoDB**: No specific limits, but includes delays between operations
+
+## Error Handling
+
+The API returns structured error responses:
 
 ```json
 {
   "success": false,
-  "error": "Error description",
-  "message": "User-friendly message"
+  "error": "Failed to fetch game data",
+  "message": "Game not found in SteamSpy database",
+  "timestamp": "2024-01-15T10:30:00.000Z"
 }
 ```
 
----
+Common error scenarios:
+- Game not found in SteamSpy database
+- Game data hidden on developer request
+- API rate limit exceeded
+- Network connectivity issues
+- MongoDB connection problems
 
-**That's it! Simple, clean, and ready for ML/clustering later! 🎮📊** 
+## Testing
+
+Use the provided test script to verify API functionality:
+
+```bash
+node test-new-services.js
+```
+
+This script tests all major endpoints and provides a comprehensive report of API health.
+
+## Configuration
+
+The API uses environment variables for configuration:
+
+```env
+MONGODB_URI=mongodb://localhost:27017/pricevalve
+PORT=3000
+NODE_ENV=development
+```
+
+## Data Sources
+
+### SteamSpy API
+- **Base URL**: https://steamspy.com/api.php
+- **Documentation**: https://steamspy.com/api.php
+- **Data**: Ownership, playtime, pricing, tags, genres
+
+### Steam Review API
+- **Base URL**: https://store.steampowered.com/appreviews/{appid}
+- **Data**: Review scores, ratings, user feedback
+
+## Migration Notes
+
+This version removes dependency on the Steam Web API and uses only SteamSpy and Steam Review APIs. The data model has been updated to reflect this change, with improved focus on ownership data, playtime statistics, and review metrics. 

@@ -1,6 +1,3 @@
-// Re-export all Steam types
-export * from './steam';
-
 // Legacy types for backward compatibility
 export interface SteamGame {
   appid: number;

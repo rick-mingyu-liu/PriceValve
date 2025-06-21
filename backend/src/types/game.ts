@@ -9,15 +9,18 @@ export interface Game {
   publisher?: string;
   tags: string[];
 
-  // Player/Market Stats
-  owners?: string;                    
-  averagePlaytime?: number;
+  // SteamSpy Stats
+  owners?: string;              // From SteamSpy (e.g., "1,000,000 .. 2,000,000")
+  averagePlaytime?: number;     // From SteamSpy: "average_forever" in minutes
 
-  // Review Score
-  reviewScore?: number;
-  totalReviews?: number;
+  // Steam Review API (Only this replaces Steam Web API)
+  reviewScore?: number;         // review_score (1-10)
+  reviewScoreDesc?: string;     // "Very Positive"
+  totalReviews?: number;        // total_reviews
+  totalPositive?: number;       // total_positive
+  totalNegative?: number;       // total_negative
 
-  // NLP content
+  // NLP content (keep if still relevant)
   shortDescription?: string;
 
   // ML / Clustering
@@ -25,14 +28,13 @@ export interface Game {
   cluster?: number;
   features?: Record<string, number>;
 
-  // ⏱️ Time Series for Sales / Ownership
-  salesHistory: SalesDataPoint[];    
-
+  // Sales/Ownership History from SteamSpy
+  salesHistory: SalesDataPoint[];
 }
 
 export interface SalesDataPoint {
-  date: string;          // ISO date, e.g., "2025-06-21"
-  owners: number;        // Parsed numeric ownership estimate
-  revenue?: number;      // If you calculate this (price * owner delta)
-  volumeChange?: number; // Change from previous day
-} 
+  date: string;          // ISO date
+  owners: number;        // Parsed numeric estimate (from SteamSpy)
+  revenue?: number;      // price * (owner delta)
+  volumeChange?: number; // Owner delta from previous entry
+}

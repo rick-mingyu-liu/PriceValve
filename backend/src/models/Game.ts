@@ -214,7 +214,8 @@ const GameSchema = new Schema({
   // Metadata
   dataSources: {
     steam: { type: Boolean, default: false },
-    steamSpy: { type: Boolean, default: false }
+    steamSpy: { type: Boolean, default: false },
+    steamReview: { type: Boolean, default: false }
   },
   
   lastAnalyzed: { 
@@ -239,6 +240,7 @@ const GameSchema = new Schema({
   lastError: {
     steam: { type: String },
     steamSpy: { type: String },
+    steamReview: { type: String },
     timestamp: { type: Date }
   }
 
@@ -343,6 +345,7 @@ export interface IGame extends Document {
   dataSources: {
     steam: boolean;
     steamSpy: boolean;
+    steamReview: boolean;
   };
   lastAnalyzed: Date;
   analysisCount: number;
@@ -350,6 +353,7 @@ export interface IGame extends Document {
   lastError?: {
     steam?: string;
     steamSpy?: string;
+    steamReview?: string;
     timestamp?: Date;
   };
   updateAnalysis: (analysisData: any) => void;
