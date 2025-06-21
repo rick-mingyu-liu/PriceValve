@@ -1,11 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
-import passport from './auth/steamAuth';
-import { steamRoutes } from './routes/steam';
-import { authRoutes } from './routes/auth';
+import apiRoutes from './routes/apiRoutes';
+import { connectDatabase } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 
 // Load environment variables
@@ -24,32 +21,11 @@ const PORT = process.env.PORT || 5001;
 // Connect to MongoDB
 connectDatabase().catch(console.error);
 
-// Session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key-change-this',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/pricevalve',
-    collectionName: 'sessions'
-  }),
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}));
-
-// Initialize Passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
-
-// CORS configuration
+// Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -64,13 +40,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// API routes
-app.use('/api/steam', steamRoutes);
-app.use('/api', gameRoutes);
-app.use('/api/data', dataRoutes);
-
-// Authentication routes
-app.use('/auth', authRoutes);
+// Main API routes - that's it!
+app.use('/api', apiRoutes);
 
 // Error handler
 app.use(errorHandler);
@@ -91,10 +62,8 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 PriceValve API running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`🎮 Game analysis: http://localhost:${PORT}/api/analyze/:appId`);
-  console.log(`📈 Data fetching: http://localhost:${PORT}/api/data/game/:appId`);
-  console.log(`📈 Database stats: http://localhost:${PORT}/api/stats`);
-  console.log(`🔐 Auth endpoints: http://localhost:${PORT}/auth/steam`);
+  console.log(`📈 Main endpoint: http://localhost:${PORT}/api/fetch`);
+  console.log(`🗑️  Clear cache: http://localhost:${PORT}/api/cache`);
   console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log('');
   console.log('📋 Available endpoints:');
@@ -105,10 +74,6 @@ app.listen(PORT, () => {
 
   if (!process.env.MONGODB_URI) {
     console.warn('⚠️  MONGODB_URI not found - using default local MongoDB');
-  }
-
-  if (!process.env.SESSION_SECRET) {
-    console.warn('⚠️  SESSION_SECRET not found - using default secret (not recommended for production)');
   }
 });
 
