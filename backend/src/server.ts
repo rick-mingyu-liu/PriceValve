@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { steamRoutes } from './routes/steam';
 import { errorHandler } from './middleware/errorHandler';
 import gameRoutes from './routes/gameRoutes';
+import dataRoutes from './routes/dataRoutes';
 import { connectDatabase } from './config/database';
 
 // Load environment variables
@@ -37,6 +38,7 @@ app.get('/api/health', (req, res) => {
 // API routes
 app.use('/api/steam', steamRoutes);
 app.use('/api', gameRoutes);
+app.use('/api/data', dataRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
@@ -50,6 +52,7 @@ app.listen(PORT, () => {
   console.log(`🚀 PriceValve server running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
   console.log(`🎮 Game analysis: http://localhost:${PORT}/api/analyze/:appId`);
+  console.log(`📈 Data fetching: http://localhost:${PORT}/api/data/game/:appId`);
   console.log(`📈 Database stats: http://localhost:${PORT}/api/stats`);
   console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
   
