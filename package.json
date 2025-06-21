@@ -31,5 +31,9 @@
     "typescript"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
 } 

@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export interface SteamGame {
   appid: number;
@@ -32,6 +32,72 @@ export interface SteamPriceData {
   };
 }
 
+// Game Analysis Types
+export interface GameAnalysis {
+  appId: number;
+  name: string;
+  developer: string;
+  publisher: string;
+  price: {
+    currentPrice: number;
+    initialPrice: number;
+    discount: number;
+    priceRange: string;
+    priceCategory: 'Free' | 'Budget' | 'Mid-Range' | 'Premium' | 'AAA';
+    pricePerHour: number;
+    valueScore: number;
+  };
+  players: {
+    averageForever: number;
+    average2Weeks: number;
+    medianForever: number;
+    median2Weeks: number;
+    currentPlayers: number;
+    playerEngagement: 'Low' | 'Medium' | 'High' | 'Very High';
+    retentionScore: number;
+  };
+  market: {
+    owners: string;
+    ownershipRange: {
+      min: number;
+      max: number;
+      average: number;
+    };
+    marketPosition: 'Niche' | 'Popular' | 'Blockbuster' | 'Viral';
+    marketScore: number;
+  };
+  reviews: {
+    scoreRank: string;
+    reviewScore: number;
+    reviewCategory: string;
+    qualityScore: number;
+  };
+  tags: Array<{ name: string; votes: number }>;
+  genres: string[];
+  languages: string[];
+  overallScore: number;
+  recommendations: string[];
+  optimalPricing: {
+    suggestedPrice: number;
+    confidence: number;
+    reasoning: string[];
+  };
+}
+
+export interface GameAnalysisResponse {
+  success: boolean;
+  data?: GameAnalysis;
+  error?: string;
+  metadata?: {
+    appId: number;
+    analyzedAt: string;
+    dataSources: {
+      steam: boolean;
+      steamSpy: boolean;
+    };
+  };
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -58,7 +124,7 @@ class ApiClient {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       return await response.json();
@@ -68,7 +134,12 @@ class ApiClient {
     }
   }
 
-  // Steam API methods
+  // Game Analysis API methods
+  async analyzeGame(appId: number): Promise<GameAnalysisResponse> {
+    return this.request<GameAnalysisResponse>(`/api/analyze/${appId}`);
+  }
+
+  // Steam API methods (legacy)
   async getGameDetails(appId: number): Promise<SteamGame> {
     return this.request<SteamGame>(`/steam/game/${appId}`);
   }
@@ -93,8 +164,8 @@ class ApiClient {
   }
 
   // Health check
-  async healthCheck(): Promise<{ status: string; timestamp: string }> {
-    return this.request<{ status: string; timestamp: string }>('/health');
+  async healthCheck(): Promise<{ status: string; timestamp: string; message: string; version: string; environment: string }> {
+    return this.request<{ status: string; timestamp: string; message: string; version: string; environment: string }>('/api/health');
   }
 }
 

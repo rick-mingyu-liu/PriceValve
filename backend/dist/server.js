@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const steam_1 = require("./routes/steam");
+// import { steamRoutes } from './routes/steam';
 const errorHandler_1 = require("./middleware/errorHandler");
 // Load environment variables
 dotenv_1.default.config();
@@ -28,11 +28,11 @@ app.get('/api/health', (req, res) => {
     });
 });
 // API routes
-app.use('/api/steam', steam_1.steamRoutes);
+// app.use('/api/steam', steamRoutes);
 // Error handling middleware
 app.use(errorHandler_1.errorHandler);
-// 404 handler
-app.use('*', (req, res) => {
+// 404 handler - use a proper path instead of wildcard
+app.use('/', (req, res) => {
     res.status(404).json({ error: 'Route not found' });
 });
 app.listen(PORT, () => {

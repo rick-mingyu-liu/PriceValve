@@ -338,4 +338,5 @@ class SteamApiService {
   }
 }
 
-export const steamApiService = new SteamApiService(); 
+export const steamApiService = new SteamApiService();
+export default steamApiService; 
