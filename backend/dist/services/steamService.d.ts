@@ -1,32 +1,4 @@
-export interface SteamGame {
-    appid: number;
-    name: string;
-    price_overview?: {
-        currency: string;
-        initial: number;
-        final: number;
-        discount_percent: number;
-    };
-}
-export interface SteamUserProfile {
-    steamid: string;
-    personaname: string;
-    avatarfull: string;
-    profileurl: string;
-    realname?: string;
-    timecreated?: number;
-}
-export interface SteamPriceData {
-    success: boolean;
-    data?: {
-        price_overview?: {
-            currency: string;
-            initial: number;
-            final: number;
-            discount_percent: number;
-        };
-    };
-}
+import { SteamGame, SteamUserProfile, SteamPriceData } from '../types';
 declare class SteamService {
     private readonly apiKey;
     private readonly baseUrl;

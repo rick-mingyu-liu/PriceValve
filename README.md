@@ -102,7 +102,12 @@ PriceWave/
 ├── frontend/                 # Next.js 15 frontend application
 │   ├── src/
 │   │   ├── app/             # Next.js App Router
-│   │   └── utils/           # Utility functions and API client
+│   │   ├── components/      # React components (including shadcn/ui)
+│   │   ├── lib/             # Utility functions and shadcn/ui utils
+│   │   └── utils/           # API client and other utilities
+│   ├── public/              # Static assets
+│   ├── components.json      # shadcn/ui configuration
+│   ├── tailwind.config.ts   # Tailwind CSS v4 configuration
 │   ├── package.json
 │   └── env.example          # Frontend environment variables
 ├── backend/                  # Express.js API server
@@ -160,6 +165,32 @@ PriceWave/
    ```
 
 This will start both the frontend (http://localhost:3000) and backend (http://localhost:3001) servers concurrently.
+
+## 🎨 UI Components (shadcn/ui)
+
+This project uses [shadcn/ui](https://ui.shadcn.com/) for beautiful, accessible React components. The components are:
+
+- **Customizable**: Built with Tailwind CSS and CSS variables
+- **Accessible**: Follows WAI-ARIA guidelines
+- **Type-safe**: Full TypeScript support
+- **Copy-paste**: No vendor lock-in, copy components directly into your project
+
+### Adding New Components
+
+To add new shadcn/ui components:
+
+```bash
+cd frontend
+npx shadcn@latest add button
+npx shadcn@latest add card
+npx shadcn@latest add dialog
+# etc.
+```
+
+### Available Components
+
+- `SteamGameCard` - Custom component for displaying Steam game information
+- More components can be added as needed using shadcn/ui
 
 ## 🔧 Environment Variables
 
@@ -257,7 +288,8 @@ The backend is built with:
 The frontend is built with:
 - **Next.js 15** - React framework with App Router
 - **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
+- **Tailwind CSS v4** - Styling with CSS variables
+- **shadcn/ui** - Beautiful, accessible React components
 - **React Query** - Data fetching and caching
 - **Zustand** - State management
 
