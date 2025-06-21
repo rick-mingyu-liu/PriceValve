@@ -13,7 +13,7 @@
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "start:frontend": "cd frontend && npm run start",
     "start:backend": "cd backend && npm run start",
-    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
     "clean": "rm -rf frontend/node_modules backend/node_modules frontend/.next backend/dist",
     "lint": "npm run lint:frontend && npm run lint:backend",
     "lint:frontend": "cd frontend && npm run lint",
@@ -31,9 +31,5 @@
     "typescript"
   ],
   "author": "",
-  "license": "ISC",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ]
+  "license": "ISC"
 } 
