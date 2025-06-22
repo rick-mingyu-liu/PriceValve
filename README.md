@@ -288,12 +288,5 @@ npm start
 4. Add tests
 5. Submit a pull request
 
-## 🆘 Support
-
-- **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-repo/discussions)
-- **Email**: support@pricewave.com
-
----
 
 **Built with ❤️ for the Steam gaming community**
