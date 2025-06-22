@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, useScroll, useTransform, useInView } from "framer-motion"
-import { ArrowRight, Check, X, Target, Search, TrendingUp, Gamepad2 } from "lucide-react"
+import { ArrowRight, Check, X, Target, Search, TrendingUp, Gamepad2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { extractAppIdFromUrl, isValidSteamUrl } from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 // Animated Counter Component
 function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number }) {
@@ -38,6 +40,9 @@ export default function HomePage() {
   const [isClient, setIsClient] = useState(false)
   const [steamUrl, setSteamUrl] = useState("")
   const [ctaSteamUrl, setCtaSteamUrl] = useState("")
+  const [error, setError] = useState("")
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const router = useRouter()
 
   // Parallax effects
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -50])
@@ -56,10 +61,38 @@ export default function HomePage() {
     setIsClient(true)
   }, [])
 
-  const handleAnalyze = (url: string) => {
-    if (url.trim()) {
-      console.log("Analyzing Steam game:", url)
-      // Here you would typically send the URL to your backend for analysis
+  const handleAnalyze = async (url: string) => {
+    if (!url.trim()) {
+      setError("Please enter a Steam game URL")
+      return
+    }
+
+    if (!isValidSteamUrl(url)) {
+      setError("Please enter a valid Steam game URL (e.g., https://store.steampowered.com/app/123456)")
+      return
+    }
+
+    const appId = extractAppIdFromUrl(url)
+    if (!appId) {
+      setError("Could not extract App ID from the provided URL")
+      return
+    }
+
+    setIsAnalyzing(true)
+    setError("")
+    
+    try {
+      // Redirect to analysis page
+      router.push(`/analyze/${appId}`)
+    } catch (error) {
+      setError("Failed to start analysis. Please try again.")
+      setIsAnalyzing(false)
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAnalyze(steamUrl)
     }
   }
 
@@ -102,7 +135,7 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-5xl lg:text-6xl font-bold leading-tight"
             >
-              Data-Driven Pricing for Indie Success
+              Optimize Your Steam Game Pricing with Mathematical Precision
             </motion.h1>
 
             <motion.p
@@ -131,22 +164,53 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.8 }}
               className="w-full space-y-4"
             >
-              <input
-                type="url"
-                value={steamUrl}
-                onChange={(e) => setSteamUrl(e.target.value)}
-                placeholder="Paste your Steam game URL here..."
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00D4FF] focus:border-transparent text-white placeholder-gray-400"
-              />
+              <div className="relative">
+                <input
+                  type="url"
+                  value={steamUrl}
+                  onChange={(e) => {
+                    setSteamUrl(e.target.value)
+                    setError("")
+                  }}
+                  onKeyPress={handleKeyPress}
+                  placeholder="https://store.steampowered.com/app/123456/GameName"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00D4FF] focus:border-transparent text-white placeholder-gray-400"
+                  disabled={isAnalyzing}
+                />
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute -bottom-6 left-0 flex items-center text-red-400 text-sm"
+                  >
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {error}
+                  </motion.div>
+                )}
+              </div>
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full">
                 <Button
                   onClick={() => handleAnalyze(steamUrl)}
-                  className="w-full bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-3 text-lg rounded-lg transition-all duration-300 group"
+                  disabled={isAnalyzing}
+                  className="w-full bg-[#00D4FF] hover:bg-[#00B8E6] disabled:bg-gray-600 text-white px-8 py-3 text-lg rounded-lg transition-all duration-300 group"
                 >
-                  Analyze Game
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  {isAnalyzing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      Analyze Game
+                      <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </Button>
               </motion.div>
+              
+              <div className="text-sm text-gray-400 text-center">
+                Examples: store.steampowered.com/app/730/Counter-Strike-2
+              </div>
             </motion.div>
           </div>
 
