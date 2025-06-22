@@ -18,50 +18,123 @@ import {
 import { extractAppIdFromUrl } from "@/lib/api";
 
 export default function HomePage() {
-  const [steamUrl, setSteamUrl] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const { scrollYProgress } = useScroll()
+  const heroRef = useRef(null)
+  const featuresRef = useRef(null)
+  const isHeroInView = useInView(heroRef)
+  const isFeaturesInView = useInView(featuresRef)
+  const [isClient, setIsClient] = useState(false)
+  const [steamUrl, setSteamUrl] = useState("")
+  const [ctaSteamUrl, setCtaSteamUrl] = useState("")
 
-  const handleAnalyze = async () => {
-    if (!steamUrl.trim()) {
-      setError("Please enter a Steam store URL.");
-      return;
+  // Parallax effects
+  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -50])
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.8])
+
+  // Fixed particle positions to avoid hydration mismatch
+  const particlePositions = [
+    { left: 10, top: 20 },
+    { left: 80, top: 60 },
+    { left: 30, top: 80 },
+    { left: 70, top: 30 },
+    { left: 50, top: 70 },
+  ]
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  const handleAnalyze = (url: string) => {
+    if (url.trim()) {
+      console.log("Analyzing Steam game:", url)
+      // Here you would typically send the URL to your backend for analysis
     }
-
-    const appId = extractAppIdFromUrl(steamUrl);
-    if (!appId) {
-      setError("Please enter a valid Steam store URL (e.g., https://store.steampowered.com/app/367520/)");
-      return;
-    }
-
-    setError("");
-    setIsLoading(true);
-    
-    // Small delay for UX
-    setTimeout(() => {
-      router.push(`/analyze/${appId}`);
-    }, 100);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAnalyze();
-    }
-  };
+  }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-black via-[#1a1a2e] to-[#16213e] text-white overflow-hidden">
+      {/* Navigation */}
+      <motion.nav
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="flex items-center justify-between px-8 py-6 relative z-40"
+      >
+        <motion.div
+          className="text-2xl font-bold flex items-center"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 400 }}
+        >
+          <motion.a
+            href="#"
+            className="text-2xl font-bold flex items-center cursor-pointer"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            <Gamepad2 className="w-8 h-8 mr-2 text-[#00D4FF]" />
+            PriceValve
+          </motion.a>
+        </motion.div>
+      </motion.nav>
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center mb-6">
-            <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-full mr-4">
-              <TrendingUp className="h-8 w-8 text-white" />
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-              PriceValve
-            </h1>
+      <section ref={heroRef} className="min-h-screen flex items-center px-8 py-10 relative">
+        <motion.div
+          style={{ y: heroY, opacity: heroOpacity }}
+          className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center"
+        >
+          <div className="space-y-8">
+            <motion.h1
+              initial={{ x: -100, opacity: 0 }}
+              animate={isHeroInView ? { x: 0, opacity: 1 } : {}}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-5xl lg:text-6xl font-bold leading-tight"
+            >
+              Data-Driven Pricing for Indie Success
+            </motion.h1>
+
+            <motion.p
+              initial={{ x: -100, opacity: 0 }}
+              animate={isHeroInView ? { x: 0, opacity: 1 } : {}}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl text-gray-300 leading-relaxed"
+            >
+              Turn pricing guesswork into profit 🎯 with AI-powered insights from real Steam marketplace data 📊
+            </motion.p>
+
+            <motion.div
+              initial={{ x: -100, opacity: 0 }}
+              animate={isHeroInView ? { x: 0, opacity: 1 } : {}}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="text-2xl font-semibold text-[#00D4FF]"
+            >
+              <span className="inline-block mr-2">🎲</span>
+              From guessing →<span className="inline-block mx-2">💰</span>
+              profit
+            </motion.div>
+
+            <motion.div
+              initial={{ y: 50, opacity: 0 }}
+              animate={isHeroInView ? { y: 0, opacity: 1 } : {}}
+              transition={{ duration: 0.8, delay: 0.8 }}
+              className="w-full space-y-4"
+            >
+              <input
+                type="url"
+                value={steamUrl}
+                onChange={(e) => setSteamUrl(e.target.value)}
+                placeholder="Paste your Steam game URL here..."
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00D4FF] focus:border-transparent text-white placeholder-gray-400"
+              />
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full">
+                <Button
+                  onClick={() => handleAnalyze(steamUrl)}
+                  className="w-full bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-3 text-lg rounded-lg transition-all duration-300 group"
+                >
+                  Analyze Game
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
           
           <h2 className="text-2xl md:text-3xl font-semibold text-white mb-6">
@@ -193,7 +266,151 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </div>
-    </main>
-  );
-} 
+      </section>
+      {/* How It Works */}
+      <section className="px-8 py-20">
+        <div className="max-w-6xl mx-auto">
+          <motion.h2
+            initial={{ y: 50, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-4xl font-bold text-center mb-16"
+          >
+            How It Works
+          </motion.h2>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            {[
+              {
+                number: "1",
+                title: "Connect Your Game 🎮",
+                description: "Enter your Steam URL or select your genre",
+                icon: <Target className="w-8 h-8" />,
+              },
+              {
+                number: "2",
+                title: "Get Instant Analysis 🤖",
+                description: "AI analyzes competitors and market data",
+                icon: <Search className="w-8 h-8" />,
+              },
+              {
+                number: "3",
+                title: "Optimize & Profit 💰",
+                description: "Apply recommendations and track results",
+                icon: <TrendingUp className="w-8 h-8" />,
+              },
+            ].map((step, index) => (
+              <motion.div
+                key={index}
+                className="text-center relative"
+                initial={{ y: 50, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -10 }}
+              >
+                <div className="bg-[#00D4FF] w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-black mx-auto mb-6 relative">
+                  {step.number}
+                </div>
+                <h3 className="text-2xl font-bold mb-4">{step.title}</h3>
+                <p className="text-gray-300 text-lg leading-relaxed">{step.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+      {/* Final CTA */}
+      <section className="px-8 py-20">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.h2
+            initial={{ y: 50, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-5xl font-bold mb-6"
+          >
+            Ready to Level Up Your Revenue?
+          </motion.h2>
+
+          <motion.p
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="text-xl text-gray-300 mb-8 leading-relaxed"
+          >
+            Join hundreds of indie developers using data to make smarter pricing decisions 🚀
+          </motion.p>
+
+          <motion.div
+            className="mb-8"
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex gap-3 max-w-4xl mx-auto">
+              <input
+                type="url"
+                value={ctaSteamUrl}
+                onChange={(e) => setCtaSteamUrl(e.target.value)}
+                placeholder="Paste your Steam game URL here..."
+                className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00D4FF] focus:border-transparent text-white placeholder-gray-400"
+              />
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={() => handleAnalyze(ctaSteamUrl)}
+                  className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-3 text-lg rounded-lg transition-all duration-300 group whitespace-nowrap"
+                >
+                  Get Free Analysis
+                  <motion.span
+                    className="ml-2"
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                  >
+                    🚀
+                  </motion.span>
+                </Button>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          <motion.p
+            className="text-[#00D4FF] text-lg font-semibold"
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            viewport={{ once: true }}
+          >
+            Free analysis shows you exactly what your competitors charge 🕵️
+          </motion.p>
+        </div>
+      </section>
+      {/* Footer */}
+      <motion.footer
+        className="bg-[#0a0a0a] py-8"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="max-w-6xl mx-auto px-8 text-center">
+          <p className="text-gray-600 text-sm">
+            © 2024 PriceValve |
+            {["Privacy Policy", "Contact", "Support"].map((link) => (
+              <motion.a
+                key={link}
+                href="#"
+                className="hover:text-gray-400 transition-colors ml-2"
+                whileHover={{ color: "#00D4FF" }}
+              >
+                {link}
+              </motion.a>
+            ))}
+          </p>
+        </div>
+      </motion.footer>
+    </div>
+  )
+}
