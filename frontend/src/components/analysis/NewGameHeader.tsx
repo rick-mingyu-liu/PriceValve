@@ -77,30 +77,33 @@ const OptimizationScore: React.FC<OptimizationScoreProps> = ({ score }) => {
 
 
 interface GameHeaderProps {
+  appId: number;
   gameName: string;
   developer: string;
   releaseDate: string;
   currentPrice: number;
-  headerImage: string;
   optimizationScore: number;
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({
+  appId,
   gameName,
   developer,
   releaseDate,
   currentPrice,
-  headerImage,
   optimizationScore,
 }) => {
+  const imageUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`;
   return (
     <div className="relative rounded-xl overflow-hidden shadow-2xl border border-slate-800 h-80">
       <Image
-        src={headerImage}
+        src={imageUrl}
         alt={`${gameName} background`}
         fill
-        className="object-cover object-center"
+        className="object-cover object-top"
         priority
+        quality={100}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/10 to-transparent" />

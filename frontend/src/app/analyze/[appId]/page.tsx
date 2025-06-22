@@ -187,11 +187,11 @@ export default function AnalysisPage() {
           className="space-y-12"
         >
           <GameHeader
+            appId={steamData.appId}
             gameName={steamData.name}
             developer={steamData.developer}
             releaseDate={steamData.releaseDate}
             currentPrice={priceAnalysis.currentPrice}
-            headerImage={steamData.background}
             optimizationScore={priceAnalysis.optimizationScore}
           />
           
