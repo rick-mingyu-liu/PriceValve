@@ -288,10 +288,6 @@ npm start
 4. Add tests
 5. Submit a pull request
 
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details
-
 ## 🆘 Support
 
 - **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
