@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# PriceValve Data Fetching Startup Script
-# This script helps you quickly start and test the data fetching functionality
+# PriceValve Development Server Startup Script
+# Starts both frontend and backend for development
 
-echo "🎮 PriceValve Data Fetching Setup"
-echo "=================================="
+echo "🎮 Starting PriceValve Development Environment..."
 echo ""
 
 # Check if Node.js is installed
@@ -19,31 +18,31 @@ if ! command -v npm &> /dev/null; then
     exit 1
 fi
 
-echo "✅ Node.js and npm are installed"
-echo ""
-
-# Navigate to backend directory
-cd backend
-
-# Check if node_modules exists
-if [ ! -d "node_modules" ]; then
-    echo "📦 Installing backend dependencies..."
-    npm install
-    if [ $? -ne 0 ]; then
-        echo "❌ Failed to install backend dependencies"
-        exit 1
+# Function to check if dependencies are installed
+check_dependencies() {
+    if [ ! -d "node_modules" ]; then
+        echo "📦 Installing root dependencies..."
+        npm install
     fi
-    echo "✅ Backend dependencies installed"
-else
-    echo "✅ Backend dependencies already installed"
-fi
+    
+    if [ ! -d "frontend/node_modules" ]; then
+        echo "📦 Installing frontend dependencies..."
+        cd frontend && npm install && cd ..
+    fi
+    
+    if [ ! -d "backend/node_modules" ]; then
+        echo "📦 Installing backend dependencies..."
+        cd backend && npm install && cd ..
+    fi
+}
 
-echo ""
+# Install dependencies if needed
+check_dependencies
 
 # Check if .env file exists
-if [ ! -f ".env" ]; then
-    echo "📝 Creating .env file..."
-    cat > .env << EOF
+if [ ! -f "backend/.env" ]; then
+    echo "⚠️ Creating .env file..."
+    cat > backend/.env << EOF
 # Server Configuration
 PORT=3001
 NODE_ENV=development
@@ -54,12 +53,9 @@ STEAM_API_KEY=
 
 # Frontend URL (for CORS)
 FRONTEND_URL=http://localhost:3000
-
-# Database (optional)
-MONGODB_URI=mongodb://localhost:27017/pricevalve
 EOF
     echo "✅ Created .env file"
-    echo "💡 You can add your Steam API key to the .env file for enhanced functionality"
+    echo "⚠️ You can add your Steam API key to the .env file for enhanced functionality"
 else
     echo "✅ .env file already exists"
 fi
@@ -75,5 +71,5 @@ echo ""
 echo "Press Ctrl+C to stop the server"
 echo ""
 
-# Start the server
-npm run dev 
+# Start backend server
+cd backend && npm run dev
