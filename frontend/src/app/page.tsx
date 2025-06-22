@@ -278,7 +278,10 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-8 leading-relaxed">
-              "<AnimatedCounter end={18000} /> games hit Steam in 2024 🎮. Most failed from bad pricing, not bad code 💔"
+              "<AnimatedCounter end={18000} /> games hit Steam in 2024 🎮.
+            </blockquote>
+            <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-8 leading-relaxed">
+            Most failed from bad pricing, not bad code 💔"
             </blockquote>
           </motion.div>
 
