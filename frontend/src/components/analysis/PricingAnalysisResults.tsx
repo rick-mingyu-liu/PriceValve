@@ -56,6 +56,12 @@ export const PricingAnalysisResults: React.FC<PricingAnalysisResultsProps> = ({
   revenueIncrease,
   confidenceScore,
 }) => {
+  // Add null checks and fallback values
+  const safeRecommendedPrice = recommendedPrice || 0;
+  const safePriceIncrease = priceIncrease || 0;
+  const safeRevenueIncrease = revenueIncrease || 0;
+  const safeConfidenceScore = confidenceScore || 0;
+
   return (
     <section>
       <div className="text-center mb-8">
@@ -79,22 +85,22 @@ export const PricingAnalysisResults: React.FC<PricingAnalysisResultsProps> = ({
         <MetricCard
           icon={<DollarSign className="w-6 h-6 text-white" />}
           iconBgColor="bg-blue-600/50"
-          value={`$${(recommendedPrice / 100).toFixed(2)}`}
+          value={`$${(safeRecommendedPrice / 100).toFixed(2)}`}
           label="Recommended Price"
-          change={`${priceIncrease >= 0 ? '+' : ''}$${(priceIncrease / 100).toFixed(2)} from current`}
+          change={`${safePriceIncrease >= 0 ? '+' : ''}$${(safePriceIncrease / 100).toFixed(2)} from current`}
           sublabel="Optimal price point"
         />
         <MetricCard
           icon={<TrendingUp className="w-6 h-6 text-white" />}
           iconBgColor="bg-green-600/50"
-          value={`+${revenueIncrease.toFixed(0)}%`}
+          value={`+${safeRevenueIncrease.toFixed(0)}%`}
           label="Revenue Increase"
           sublabel="Potential uplift"
         />
         <MetricCard
           icon={<Target className="w-6 h-6 text-white" />}
           iconBgColor="bg-yellow-600/50"
-          value={`${confidenceScore.toFixed(0)}%`}
+          value={`${safeConfidenceScore.toFixed(0)}%`}
           label="Confidence Score"
           sublabel="High confidence"
         />

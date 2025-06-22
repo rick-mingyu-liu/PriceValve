@@ -93,12 +93,20 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
   currentPrice,
   optimizationScore,
 }) => {
-  const imageUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`;
+  // Add null checks and fallback values
+  const safeAppId = appId || 0;
+  const safeGameName = gameName || 'Unknown Game';
+  const safeDeveloper = developer || 'Unknown Developer';
+  const safeReleaseDate = releaseDate || new Date().toISOString();
+  const safeCurrentPrice = currentPrice || 0;
+  const safeOptimizationScore = optimizationScore || 0;
+
+  const imageUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${safeAppId}/header.jpg`;
   return (
     <div className="relative rounded-xl overflow-hidden shadow-2xl border border-slate-800 h-80">
       <Image
         src={imageUrl}
-        alt={`${gameName} background`}
+        alt={`${safeGameName} background`}
         fill
         className="object-cover object-top"
         priority
@@ -112,23 +120,23 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
         <div className="flex items-end justify-between gap-8">
           <div className="space-y-2">
             <h1 className="text-4xl font-extrabold text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-              {gameName}
+              {safeGameName}
             </h1>
             <p className="text-lg text-gray-300 font-light">
-              by {developer}
+              by {safeDeveloper}
             </p>
             <div className="flex items-center space-x-4 pt-2">
               <span className="text-gray-400 text-sm">
-                Released: {new Date(releaseDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                Released: {new Date(safeReleaseDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
               <span className="text-gray-400 text-sm">|</span>
               <span className="text-white font-semibold text-lg bg-black/50 px-3 py-1 rounded-md">
-                ${(currentPrice / 100).toFixed(2)}
+                ${(safeCurrentPrice / 100).toFixed(2)}
               </span>
             </div>
           </div>
           <div className="flex-shrink-0">
-            <OptimizationScore score={optimizationScore} />
+            <OptimizationScore score={safeOptimizationScore} />
           </div>
         </div>
       </div>

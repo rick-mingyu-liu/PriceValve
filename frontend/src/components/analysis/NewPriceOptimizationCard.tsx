@@ -16,7 +16,13 @@ export const PriceOptimizationCard: React.FC<PriceOptimizationCardProps> = ({
   revenueIncrease,
   confidence,
 }) => {
-  const priceChange = optimalPrice - currentPrice;
+  // Add null checks and fallback values
+  const safeOptimalPrice = optimalPrice || 0;
+  const safeCurrentPrice = currentPrice || 0;
+  const safeRevenueIncrease = revenueIncrease || 0;
+  const safeConfidence = confidence || 0;
+  
+  const priceChange = safeOptimalPrice - safeCurrentPrice;
 
   return (
     <motion.div 
@@ -36,7 +42,7 @@ export const PriceOptimizationCard: React.FC<PriceOptimizationCardProps> = ({
       </div>
       
       <div className="my-8 text-center flex-grow flex flex-col justify-center">
-        <p className="text-6xl font-extrabold text-blue-400">${(optimalPrice / 100).toFixed(2)}</p>
+        <p className="text-6xl font-extrabold text-blue-400">${(safeOptimalPrice / 100).toFixed(2)}</p>
         <p className="text-sm text-slate-300 mt-2">Recommended Price</p>
       </div>
 
@@ -50,12 +56,12 @@ export const PriceOptimizationCard: React.FC<PriceOptimizationCardProps> = ({
         <div className="w-full bg-slate-700 h-px" />
         <div className="flex justify-between items-center text-sm">
           <span className="text-slate-400">Revenue Impact</span>
-          <span className="font-semibold text-green-400">+{revenueIncrease.toFixed(0)}% potential</span>
+          <span className="font-semibold text-green-400">+{safeRevenueIncrease.toFixed(0)}% potential</span>
         </div>
         <div className="w-full bg-slate-700 h-px" />
         <div className="flex justify-between items-center text-sm">
           <span className="text-slate-400">Confidence</span>
-          <span className="font-semibold text-white">{confidence.toFixed(0)}%</span>
+          <span className="font-semibold text-white">{safeConfidence.toFixed(0)}%</span>
         </div>
       </div>
     </motion.div>

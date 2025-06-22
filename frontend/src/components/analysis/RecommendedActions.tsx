@@ -68,14 +68,20 @@ export const RecommendedActions: React.FC<RecommendedActionsProps> = ({
   closestCompetitorName,
   competitorPriceComparison = [],
 }) => {
+  // Add null checks and fallback values
+  const safeCurrentPrice = currentPrice || 0;
+  const safeRecommendedPrice = recommendedPrice || 0;
+  const safeRevenueIncrease = revenueIncrease || 0;
+  const safeMarketPositioningStatement = marketPositioningStatement || "Position as premium indie title. Your quality justifies higher pricing tier.";
+
   // Get top competitors for more specific recommendations
   const topCompetitors = competitorPriceComparison
     .filter(comp => !comp.isTarget)
     .sort((a, b) => b.price - a.price)
     .slice(0, 3);
 
-  const priceDirection = recommendedPrice > currentPrice ? 'increase' : 'decrease';
-  const priceChange = Math.abs(recommendedPrice - currentPrice);
+  const priceDirection = safeRecommendedPrice > safeCurrentPrice ? 'increase' : 'decrease';
+  const priceChange = Math.abs(safeRecommendedPrice - safeCurrentPrice);
 
   return (
     <section>
@@ -104,10 +110,10 @@ export const RecommendedActions: React.FC<RecommendedActionsProps> = ({
           title={priceDirection === 'increase' ? "Increase Base Price" : "Adjust Base Price"}
           description={
             priceDirection === 'increase' 
-              ? `Your game is underpriced compared to similar titles. Increase from $${(currentPrice / 100).toFixed(2)} to $${(recommendedPrice / 100).toFixed(2)}.`
-              : `Consider adjusting your price from $${(currentPrice / 100).toFixed(2)} to $${(recommendedPrice / 100).toFixed(2)} for better market positioning.`
+              ? `Your game is underpriced compared to similar titles. Increase from $${(safeCurrentPrice / 100).toFixed(2)} to $${(safeRecommendedPrice / 100).toFixed(2)}.`
+              : `Consider adjusting your price from $${(safeCurrentPrice / 100).toFixed(2)} to $${(safeRecommendedPrice / 100).toFixed(2)} for better market positioning.`
           }
-          benefit={`+${revenueIncrease.toFixed(0)}% revenue potential`}
+          benefit={`+${safeRevenueIncrease.toFixed(0)}% revenue potential`}
           priority="High"
         />
         <ActionCard
@@ -116,8 +122,8 @@ export const RecommendedActions: React.FC<RecommendedActionsProps> = ({
           title="Market Positioning"
           description={
             closestCompetitorName 
-              ? `${marketPositioningStatement} Focus on differentiating from ${closestCompetitorName}.`
-              : marketPositioningStatement
+              ? `${safeMarketPositioningStatement} Focus on differentiating from ${closestCompetitorName}.`
+              : safeMarketPositioningStatement
           }
           benefit="Better brand perception"
           priority="High"
@@ -162,7 +168,7 @@ export const RecommendedActions: React.FC<RecommendedActionsProps> = ({
                 <h4 className="font-semibold text-white text-sm">{competitor.name}</h4>
                 <p className="text-[#00D4FF] font-bold">${(competitor.price / 100).toFixed(2)}</p>
                 <p className="text-slate-400 text-xs mt-1">
-                  {competitor.price > currentPrice ? 'Higher priced' : 'Lower priced'} than your game
+                  {competitor.price > safeCurrentPrice ? 'Higher priced' : 'Lower priced'} than your game
                 </p>
               </div>
             ))}
