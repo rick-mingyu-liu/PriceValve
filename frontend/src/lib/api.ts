@@ -1,5 +1,5 @@
 // API client for PriceValve backend
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = "http://localhost:5001";
 
 // TypeScript interfaces matching backend response structure
 export interface SteamGameDetails {
@@ -182,6 +182,7 @@ class PriceValveAPI {
     return this.makeRequest<ComprehensiveAnalysis>('/api/analyze', {
       method: 'POST',
       body: JSON.stringify({ appId: numericAppId }),
+      mode: 'cors',
     });
   }
 
