@@ -4,7 +4,7 @@
 
 ## 🎯 Project Overview
 
-PriceWave is an intelligent pricing platform that analyzes Steam games in real-time and provides AI-powered pricing recommendations. The system combines data from Steam APIs, sentiment analysis, and revenue optimization models to help developers optimize their game pricing strategy.
+PriceWave is an intelligent pricing platform that analyzes Steam games in real-time and provides Revenue Optimizing pricing recommendations. The system combines data from Steam APIs, sentiment analysis, and demand estimation models to help developers optimize their game pricing strategy.
 
 ### Key Features
 
