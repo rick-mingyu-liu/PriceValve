@@ -8,9 +8,9 @@ PriceValve is an intelligent pricing platform that analyzes Steam games in real-
 
 ### Key Features
 
-- **🔍 Real-time Steam Data Analysis**: Fetch and analyze game data from Steam Web API and SteamSpy
+- **🔍 Real-time Steam Data Analysis**: Fetch and analyze game data from Steam Web API, SteamSpy API and ITAD (IsThereAnyDeal) API,
 - **📊 Price Analysis**: Comprehensive pricing analysis with competitor comparison
-- **📈 Price Recommendations**: AI-generated pricing suggestions with confidence scores
+- **📈 Price Recommendations**: Model-generated pricing suggestions with confidence scores
 - **📱 Modern Web Interface**: Beautiful React/Next.js frontend with real-time updates
 - **🏆 Competitor Comparison**: Comprehensive analysis of similar games and market positioning
 - **🎮 Game Discovery**: PriceValveScript.js-inspired game search and selection functionality
@@ -289,4 +289,4 @@ npm start
 5. Submit a pull request
 
 
-**Built with ❤️ for SpurHacks and the Steam gaming community**
+**Built with ❤️ for SpurHacks 2025 and the Steam gaming community**
