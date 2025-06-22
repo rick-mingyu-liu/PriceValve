@@ -159,17 +159,19 @@ export default function HomePage() {
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00D4FF] focus:border-transparent text-white placeholder-gray-400"
                   disabled={isAnalyzing}
                 />
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute -bottom-6 left-0 flex items-center text-red-400 text-sm"
-                  >
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {error}
-                  </motion.div>
-                )}
               </div>
+              
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center text-red-400 text-sm bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2"
+                >
+                  <AlertCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span>{error}</span>
+                </motion.div>
+              )}
+              
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full">
                 <Button
                   onClick={() => handleAnalyze(steamUrl)}
