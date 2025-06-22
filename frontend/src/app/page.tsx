@@ -40,7 +40,6 @@ export default function HomePage() {
   const isFeaturesInView = useInView(featuresRef)
   const [isClient, setIsClient] = useState(false)
   const [steamUrl, setSteamUrl] = useState("")
-  const [ctaSteamUrl, setCtaSteamUrl] = useState("")
   const [error, setError] = useState("")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const router = useRouter()
@@ -114,7 +113,7 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-5xl lg:text-6xl font-bold leading-tight"
             >
-              Optimize Your Steam Game Pricing with Mathematical Precision
+              Is Your Steam Game Priced Right? Let's Find Out! 🎮
             </motion.h1>
 
             <motion.p
@@ -123,7 +122,10 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-xl text-gray-300 leading-relaxed"
             >
-              Turn pricing guesswork into profit 🎯 with AI-powered insights from real Steam marketplace data 📊
+              Drop your Steam URL, get math-backed pricing advice in seconds. 
+              No guesswork, just data.
+              <br />
+              (And you'll make more money!)
             </motion.p>
 
             <motion.div
@@ -133,8 +135,8 @@ export default function HomePage() {
               className="text-2xl font-semibold text-[#00D4FF]"
             >
               <span className="inline-block mr-2">🎲</span>
-              From guessing →<span className="inline-block mx-2">💰</span>
-              profit
+              Stop guessing →<span className="inline-block mx-2">💰</span>
+              start earning
             </motion.div>
 
             <motion.div
@@ -152,7 +154,7 @@ export default function HomePage() {
                     setError("")
                   }}
                   onKeyPress={handleKeyPress}
-                  placeholder="https://store.steampowered.com/app/123456/GameName"
+                  placeholder="https://store.steampowered.com/app/730/Counter-Strike-2"
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00D4FF] focus:border-transparent text-white placeholder-gray-400"
                   disabled={isAnalyzing}
                 />
@@ -186,10 +188,6 @@ export default function HomePage() {
                   )}
                 </Button>
               </motion.div>
-              
-              <div className="text-sm text-gray-400 text-center">
-                Examples: store.steampowered.com/app/730/Counter-Strike-2
-              </div>
             </motion.div>
           </div>
 
@@ -276,8 +274,7 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-8 leading-relaxed">
-              "<AnimatedCounter end={18000} /> games launched on Steam in 2024 🎮. Most failed due to poor pricing
-              decisions, not bad gameplay 💔"
+              "<AnimatedCounter end={18000} /> games hit Steam in 2024 🎮. Most failed from bad pricing, not bad code 💔"
             </blockquote>
           </motion.div>
 
@@ -289,13 +286,13 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="space-y-6"
             >
-              <h3 className="text-2xl font-bold mb-8 text-red-400">Common Problems</h3>
+              <h3 className="text-2xl font-bold mb-8 text-red-400">The Usual Suspects</h3>
               <div className="space-y-4">
                 {[
-                  { icon: "🎲", text: "Pricing guesswork" },
-                  { icon: "💸", text: "Missing revenue opportunities" },
-                  { icon: "⏰", text: "Poor launch timing" },
-                  { icon: "👁️‍🗨️", text: "No competitor insights" },
+                  { icon: "🎲", text: "Throwing darts at price tags" },
+                  { icon: "💸", text: "Leaving money on the table" },
+                  { icon: "⏰", text: "Launching at the wrong time" },
+                  { icon: "👁️‍🗨️", text: "Blind to what competitors charge" },
                 ].map((item, index) => (
                   <motion.div
                     key={index}
@@ -327,13 +324,13 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="space-y-6"
             >
-              <h3 className="text-2xl font-bold mb-8 text-[#00D4FF]">Our Solutions</h3>
+              <h3 className="text-2xl font-bold mb-8 text-[#00D4FF]">How We Fix It</h3>
               <div className="space-y-4">
                 {[
-                  { icon: "🎯", text: "Data-driven pricing recommendations" },
-                  { icon: "🔍", text: "Real-time competitor analysis" },
-                  { icon: "⏰", text: "Optimal launch timing" },
-                  { icon: "📈", text: "Revenue impact tracking" },
+                  { icon: "🎯", text: "Data-backed price recommendations" },
+                  { icon: "🔍", text: "Spy on your competitors (legally)" },
+                  { icon: "⏰", text: "Find the perfect launch window" },
+                  { icon: "📈", text: "Track your revenue wins" },
                 ].map((item, index) => (
                   <motion.div
                     key={index}
@@ -360,6 +357,59 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      {/* How It Works */}
+      <section className="px-8 py-20">
+        <div className="max-w-6xl mx-auto">
+          <motion.h2
+            initial={{ y: 50, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-4xl font-bold text-center mb-16"
+          >
+            How It Works (It's Pretty Simple)
+          </motion.h2>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            {[
+              {
+                number: "1",
+                title: "Drop Your Steam URL 🎮",
+                description: "Paste your game's Steam page link",
+                icon: <Target className="w-8 h-8" />,
+              },
+              {
+                number: "2",
+                title: "Get Instant Analysis 🤖",
+                description: "We crunch the numbers and give you insights",
+                icon: <Search className="w-8 h-8" />,
+              },
+              {
+                number: "3",
+                title: "Price Smarter, Earn More 💰",
+                description: "Apply our recommendations and watch revenue grow",
+                icon: <TrendingUp className="w-8 h-8" />,
+              },
+            ].map((step, index) => (
+              <motion.div
+                key={index}
+                className="text-center relative"
+                initial={{ y: 50, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -10 }}
+              >
+                <div className="bg-[#00D4FF] w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-black mx-auto mb-6 relative">
+                  {step.number}
+                </div>
+                <h3 className="text-2xl font-bold mb-4">{step.title}</h3>
+                <p className="text-gray-300 text-lg leading-relaxed">{step.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
       {/* Features List */}
       <section ref={featuresRef} className="px-8 py-20">
         <div className="max-w-6xl mx-auto">
@@ -370,7 +420,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-4xl font-bold text-center mb-16"
           >
-            How PriceValve Powers Your Success 🚀
+            What PriceValve Actually Does 🚀
           </motion.h2>
 
           <div className="grid lg:grid-cols-2 gap-12">
@@ -379,15 +429,15 @@ export default function HomePage() {
               {[
                 {
                   emoji: "🎯",
-                  title: "PRICING INTELLIGENCE",
-                  description: "Get optimal price points with confidence scores 💯",
-                  arrow: "Stop guessing prices, start hitting revenue targets",
+                  title: "PRICE ANALYSIS",
+                  description: "Is your game priced too high, too low, or just right 🤔",
+                  arrow: "Get a confidence score for your current price point",
                 },
                 {
                   emoji: "🕵️",
-                  title: "COMPETITOR ANALYSIS",
-                  description: "Track similar games and market positioning 📊",
-                  arrow: "Know what competitors charge and position yourself to win",
+                  title: "COMPETITOR COMPARISON",
+                  description: "Compare your game to similar titles in your genre",
+                  arrow: "Knowledge is power, especially about your competition",
                 },
               ].map((feature, index) => (
                 <div
@@ -415,14 +465,14 @@ export default function HomePage() {
                 {
                   emoji: "📈",
                   title: "MARKET INSIGHTS",
-                  description: "Understand player behavior and market trends 🌟",
-                  arrow: "Make decisions based on real data, not assumptions",
+                  description: "Understand what players actually want (and pay for)",
+                  arrow: "Data beats assumptions every time",
                 },
                 {
                   emoji: "🚀",
-                  title: "LAUNCH TIMING",
-                  description: "Identify perfect windows for releases and sales ⭐",
-                  arrow: "Launch when your audience is most engaged",
+                  title: "OPTIMIZATION TIPS",
+                  description: "Get recommendations to improve your pricing ⭐",
+                  arrow: "Actionable advice based on your game's data",
                 },
               ].map((feature, index) => (
                 <div
@@ -444,126 +494,6 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-        </div>
-      </section>
-      {/* How It Works */}
-      <section className="px-8 py-20">
-        <div className="max-w-6xl mx-auto">
-          <motion.h2
-            initial={{ y: 50, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-4xl font-bold text-center mb-16"
-          >
-            How It Works
-          </motion.h2>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            {[
-              {
-                number: "1",
-                title: "Connect Your Game 🎮",
-                description: "Enter your Steam URL or select your genre",
-                icon: <Target className="w-8 h-8" />,
-              },
-              {
-                number: "2",
-                title: "Get Instant Analysis 🤖",
-                description: "AI analyzes competitors and market data",
-                icon: <Search className="w-8 h-8" />,
-              },
-              {
-                number: "3",
-                title: "Optimize & Profit 💰",
-                description: "Apply recommendations and track results",
-                icon: <TrendingUp className="w-8 h-8" />,
-              },
-            ].map((step, index) => (
-              <motion.div
-                key={index}
-                className="text-center relative"
-                initial={{ y: 50, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10 }}
-              >
-                <div className="bg-[#00D4FF] w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-black mx-auto mb-6 relative">
-                  {step.number}
-                </div>
-                <h3 className="text-2xl font-bold mb-4">{step.title}</h3>
-                <p className="text-gray-300 text-lg leading-relaxed">{step.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-      {/* Final CTA */}
-      <section className="px-8 py-20">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.h2
-            initial={{ y: 50, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-5xl font-bold mb-6"
-          >
-            Ready to Level Up Your Revenue?
-          </motion.h2>
-
-          <motion.p
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="text-xl text-gray-300 mb-8 leading-relaxed"
-          >
-            Join hundreds of indie developers using data to make smarter pricing decisions 🚀
-          </motion.p>
-
-          <motion.div
-            className="mb-8"
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <div className="flex gap-3 max-w-4xl mx-auto">
-              <input
-                type="url"
-                value={ctaSteamUrl}
-                onChange={(e) => setCtaSteamUrl(e.target.value)}
-                placeholder="Paste your Steam game URL here..."
-                className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00D4FF] focus:border-transparent text-white placeholder-gray-400"
-              />
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  onClick={() => handleAnalyze(ctaSteamUrl)}
-                  className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-3 text-lg rounded-lg transition-all duration-300 group whitespace-nowrap"
-                >
-                  Get Free Analysis
-                  <motion.span
-                    className="ml-2"
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
-                  >
-                    🚀
-                  </motion.span>
-                </Button>
-              </motion.div>
-            </div>
-          </motion.div>
-
-          <motion.p
-            className="text-[#00D4FF] text-lg font-semibold"
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            viewport={{ once: true }}
-          >
-            Free analysis shows you exactly what your competitors charge 🕵️
-          </motion.p>
         </div>
       </section>
       {/* Footer */}
