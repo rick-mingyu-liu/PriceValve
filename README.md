@@ -9,29 +9,26 @@ PriceWave is an intelligent pricing platform that analyzes Steam games in real-t
 ### Key Features
 
 - **🔍 Real-time Steam Data Analysis**: Fetch and analyze game data from Steam Web API and SteamSpy
-- **💰 Revenue Optimization Models**: Advanced algorithms for price prediction and optimization
-- **📊 Sentiment Analysis**: Review sentiment analysis for market perception
-- **📈 Price Elasticity Derivation**: Mathematical models for demand-price relationships
-- **🎯 Price Recommendations**: AI-generated pricing suggestions with confidence scores
+- **📊 Price Analysis**: Comprehensive pricing analysis with competitor comparison
+- **📈 Price Recommendations**: AI-generated pricing suggestions with confidence scores
 - **📱 Modern Web Interface**: Beautiful React/Next.js frontend with real-time updates
 - **🏆 Competitor Comparison**: Comprehensive analysis of similar games and market positioning
 - **🎮 Game Discovery**: PriceValveScript.js-inspired game search and selection functionality
 
-## 🏗️ Project Architecture
+## 📁 Project Architecture
 
 ```
-PriceValve/
-├── 📁 backend/                    # Express.js API Server
+PriceWave/
+├── 📁 backend/                    # Node.js/Express Backend
 │   ├── src/
-│   │   ├── 📁 controllers/        # API route handlers
-│   │   ├── 📁 services/           # Business logic & external APIs
-│   │   ├── 📁 models/             # Database models
-│   │   ├── 📁 routes/             # API endpoints
-│   │   ├── 📁 middleware/         # Express middleware
+│   │   ├── 📁 controllers/        # API controllers
+│   │   ├── 📁 services/           # Business logic services
+│   │   ├── 📁 routes/             # API route definitions
 │   │   ├── 📁 types/              # TypeScript type definitions
-│   │   └── 📁 utils/              # Utility functions
+│   │   └── server.ts              # Express server setup
 │   ├── package.json
-│   └── env.example
+│   ├── tsconfig.json
+│   └── .gitignore
 ├── 📁 frontend/                   # Next.js 15 Frontend
 │   ├── src/
 │   │   ├── 📁 app/                # Next.js App Router
@@ -45,20 +42,15 @@ PriceValve/
 │   │   ├── 📁 lib/                # Utility functions
 │   │   └── 📁 utils/              # API client & utilities
 │   ├── package.json
-│   └── env.example
-├── 📁 revenue-optimization/       # Revenue Optimization Models
-│   ├── 📁 models/                 # Trained optimization models
-│   ├── 📁 notebooks/              # Jupyter notebooks
-│   ├── 📁 data/                   # Training datasets
-│   ├── 📁 scripts/                # Optimization training scripts
-│   └── requirements.txt
-├── 📁 data-models/                # Data Model Definitions
-│   ├── 📁 schemas/                # Database schemas
-│   ├── 📁 types/                  # TypeScript interfaces
-│   └── 📁 migrations/             # Database migrations
-├── 📁 docs/                       # Documentation
-├── PriceValveScript.js           # Core game management script
+│   ├── next.config.js
+│   ├── tailwind.config.js
+│   └── .gitignore
+├── 📁 node_modules/               # Dependencies
 ├── package.json                   # Root package.json
+├── package-lock.json              # Lock file
+├── tsconfig.json                  # TypeScript config
+├── eslint.config.js               # ESLint config
+├── .gitignore                     # Git ignore rules
 └── README.md
 ```
 
@@ -67,8 +59,6 @@ PriceValve/
 ### Prerequisites
 
 - **Node.js 18+**
-- **Python 3.8+** (for revenue optimization models)
-- **MongoDB** (for data storage)
 - **Steam Web API Key** (optional, for enhanced features)
 
 ### Installation
@@ -89,26 +79,18 @@ PriceValve/
    
    # Install frontend dependencies
    cd ../frontend && npm install
-   
-   # Install revenue optimization dependencies
-   cd ../revenue-optimization && pip install -r requirements.txt
    ```
 
 3. **Set up environment variables**
 
    **Backend (.env):**
    ```env
-   PORT=3001
-   NODE_ENV=development
-   MONGODB_URI=mongodb://localhost:27017/pricewave
-   STEAM_API_KEY=your_steam_api_key
-   FRONTEND_URL=http://localhost:3000
+   PORT=5001
    ```
 
    **Frontend (.env.local):**
    ```env
-   NEXT_PUBLIC_API_URL=http://localhost:3001/api
-   NEXT_PUBLIC_STEAM_API_KEY=your_steam_api_key
+   NEXT_PUBLIC_API_URL=http://localhost:5001
    ```
 
 4. **Start development servers**
@@ -119,46 +101,22 @@ PriceValve/
 
    This starts:
    - Frontend: http://localhost:3000
-   - Backend: http://localhost:3001
+   - Backend: http://localhost:5001
 
 ## 🎮 Frontend Features
 
-### Game Discovery & Selection
+### Core Analysis Features
 
-The frontend includes a focused `GameSelector` component that provides core PriceValveScript.js functionality:
+The frontend provides comprehensive game analysis with a modern, intuitive interface:
 
-#### **GameSelector Component**
-- **Game Search**: Search games by name, developer, or genre (like PriceValveScript.js search)
-- **Similar Games Discovery**: Find games in the same cluster (like `getSimilarGames()`)
-- **Game Selection**: Pick games with visual feedback (like `pickGame()` and `pickGameByName()`)
-- **One-Click Analysis**: Instant access to comprehensive pricing analysis
-- **Cluster-based Filtering**: Visual cluster indicators for similar games
+#### **Game Analysis Workflow**
+- **Steam URL Input**: Paste any Steam game URL for instant analysis
+- **Real-time Analysis**: Get comprehensive pricing insights in seconds
+- **Interactive Charts**: Visual competitor and trend analysis
+- **Actionable Recommendations**: Specific steps to optimize pricing
+- **Executive Summary**: High-level analysis overview
 
-#### **PriceValveScript.js Integration**
-The frontend implements the core functionality from `PriceValveScript.js`:
-
-```typescript
-// Game Class Properties (Frontend Implementation)
-interface Game {
-  appId: number;           // Steam App ID
-  name: string;            // Game name
-  price: number;           // Current price
-  developer: string;       // Developer name
-  cluster?: string;        // Cluster group for similar games
-  // ... additional properties
-}
-
-// GameSelector Methods (Frontend Implementation)
-class GameSelector {
-  searchGames(query)       // Search by name/developer/genre
-  getSimilarGames(game)    // Find similar games by cluster
-  pickGame(game)           // Select game for analysis
-  handleGameSelect(game)   // Game selection callback
-}
-```
-
-### Analysis Components
-
+#### **Analysis Components**
 - **GameHeader**: Game information display with optimization score
 - **PricingAnalysisResults**: Detailed pricing recommendations
 - **RecommendedActions**: Actionable insights and next steps
@@ -235,34 +193,6 @@ interface RevenuePredictions {
 }
 ```
 
-## 💰 Revenue Optimization Models
-
-### Current Models
-
-1. **Price Elasticity Derivation**
-   - Mathematical analysis of demand-price relationships
-   - Competitor price comparison
-   - Revenue optimization algorithms
-
-2. **Sentiment Analysis**
-   - Review sentiment classification
-   - Trend detection
-   - Price-sentiment correlation
-
-3. **Competitor Comparison**
-   - Market positioning analysis
-   - Similar game identification
-   - Pricing strategy recommendations
-
-### Model Training
-
-```bash
-cd revenue-optimization
-python scripts/train_price_elasticity.py
-python scripts/train_sentiment_model.py
-python scripts/train_competitor_analysis.py
-```
-
 ## 🔌 API Endpoints
 
 ### Game Analysis
@@ -286,7 +216,6 @@ python scripts/train_competitor_analysis.py
 Built with **shadcn/ui** and **Tailwind CSS**:
 
 ### Core Components
-- `GameSelector` - Game search and discovery interface (PriceValveScript.js style)
 - `Navbar` - Navigation component
 - `SteamGameCard` - Game information card
 
@@ -317,11 +246,6 @@ Built with **shadcn/ui** and **Tailwind CSS**:
 - Market positioning
 - Genre analysis
 
-### Internal Revenue Optimization Models
-- Price elasticity calculations
-- Sentiment analysis
-- Competitor comparison algorithms
-
 ## 🔧 Development
 
 ### Backend Development
@@ -340,13 +264,6 @@ npm run build        # Build for production
 npm run lint         # Run linter
 ```
 
-### Revenue Optimization Development
-```bash
-cd revenue-optimization
-jupyter notebook     # Start Jupyter
-python scripts/      # Run optimization scripts
-```
-
 ## 🚀 Deployment
 
 ### Backend Deployment
@@ -362,19 +279,6 @@ cd frontend
 npm run build
 npm start
 ```
-
-### Revenue Optimization Model Deployment
-```bash
-cd revenue-optimization
-python scripts/deploy_models.py
-```
-
-## 📚 Documentation
-
-- [API Documentation](./docs/api.md)
-- [Revenue Optimization Model Documentation](./docs/revenue-models.md)
-- [Database Schema](./docs/database.md)
-- [Deployment Guide](./docs/deployment.md)
 
 ## 🤝 Contributing
 
@@ -397,5 +301,3 @@ MIT License - see [LICENSE](LICENSE) for details
 ---
 
 **Built with ❤️ for the Steam gaming community**
-
-

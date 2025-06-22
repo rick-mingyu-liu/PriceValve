@@ -136,8 +136,8 @@ export default function HomePage() {
               className="text-2xl font-semibold text-[#00D4FF]"
             >
               <span className="inline-block mr-2">🎲</span>
-              Stop guessing →<span className="inline-block mx-2">💰</span>
-              start earning
+              Stop Guessing →<span className="inline-block mx-2">💰</span>
+              Start Earning
             </motion.div>
 
             <motion.div
