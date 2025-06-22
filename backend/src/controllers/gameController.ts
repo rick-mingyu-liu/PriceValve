@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { analyzeGame, createComprehensiveAnalysis } from '../services/priceOptimizer';
 import { getGameDetails, searchGames, getFeaturedGames } from '../services/steamApi';
 import { getGameData, getTopGames, getAllGenres } from '../services/steamSpyApi';
-import { getComprehensivePricingData, searchGames as searchITADGames } from '../services/isThereAnyDealApi';
 import { 
   ComprehensiveAnalysis, 
   AnalysisRequest, 
@@ -29,10 +28,9 @@ export const gameController = {
       console.log(`Starting comprehensive analysis for app ${appId}`);
 
       // Fetch data from all APIs in parallel
-      const [steamData, steamSpyData, itadData] = await Promise.allSettled([
+      const [steamData, steamSpyData] = await Promise.allSettled([
         getGameDetails(appId),
         getGameData(appId),
-        getComprehensivePricingData(appId)
       ]);
 
       // Create comprehensive analysis
@@ -43,7 +41,7 @@ export const gameController = {
         priceAnalysis = await createComprehensiveAnalysis(
           steamData.value,
           steamSpyData.value,
-          itadData.status === 'fulfilled' ? itadData.value : null
+          null
         );
       }
 
@@ -54,7 +52,7 @@ export const gameController = {
           : 'Unknown',
         steamData: steamData.status === 'fulfilled' ? steamData.value : null,
         steamSpyData: steamSpyData.status === 'fulfilled' ? steamSpyData.value : null,
-        itadData: itadData.status === 'fulfilled' ? itadData.value : null,
+        itadData: null,
         priceAnalysis,
         timestamp: new Date().toISOString(),
         success: true
@@ -99,10 +97,9 @@ export const gameController = {
       // Process games sequentially to avoid overwhelming APIs
       for (const appId of appIds) {
         try {
-          const [steamData, steamSpyData, itadData] = await Promise.allSettled([
+          const [steamData, steamSpyData] = await Promise.allSettled([
             getGameDetails(appId),
             getGameData(appId),
-            getComprehensivePricingData(appId)
           ]);
 
           let priceAnalysis = null;
@@ -112,7 +109,7 @@ export const gameController = {
             priceAnalysis = await createComprehensiveAnalysis(
               steamData.value,
               steamSpyData.value,
-              itadData.status === 'fulfilled' ? itadData.value : null
+              null
             );
           }
 
@@ -123,7 +120,7 @@ export const gameController = {
               : 'Unknown',
             steamData: steamData.status === 'fulfilled' ? steamData.value : null,
             steamSpyData: steamSpyData.status === 'fulfilled' ? steamSpyData.value : null,
-            itadData: itadData.status === 'fulfilled' ? itadData.value : null,
+            itadData: null,
             priceAnalysis,
             timestamp: new Date().toISOString(),
             success: true

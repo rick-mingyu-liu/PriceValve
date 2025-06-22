@@ -3,7 +3,6 @@
 
 import { SteamGameDetails } from './steamApi';
 import { SteamSpyGameData } from './steamSpyApi';
-import { ITADPriceHistory, calculatePriceStatistics, getBestDeal } from './isThereAnyDealApi';
 
 export interface CompetitorPrice {
   name: string;
@@ -23,6 +22,14 @@ export interface MarketSharePoint {
   marketShare: number;
 }
 
+interface PriceHistoryInfo {
+  lowestPrice: number;
+  highestPrice: number;
+  averagePrice: number;
+  priceVolatility: number;
+  priceTrend: 'increasing' | 'decreasing' | 'stable';
+}
+
 export interface PriceAnalysis {
   appId: number;
   name: string;
@@ -32,13 +39,7 @@ export interface PriceAnalysis {
   demandScore: number;
   competitionScore: number;
   marketTrend: 'bullish' | 'bearish' | 'neutral';
-  priceHistory: {
-    lowestPrice: number;
-    highestPrice: number;
-    averagePrice: number;
-    priceVolatility: number;
-    priceTrend: 'increasing' | 'decreasing' | 'stable';
-  };
+  priceHistory: PriceHistoryInfo;
   factors: {
     popularity: number;
     reviewScore: number;
@@ -98,18 +99,12 @@ export async function analyzeGame(appId: number): Promise<PriceAnalysis | null> 
 export async function createComprehensiveAnalysis(
   steamData: SteamGameDetails,
   steamSpyData: SteamSpyGameData,
-  itadData: {
-    currentPrices: any;
-    priceHistory: ITADPriceHistory;
-    gameInfo: any;
-  } | null
+  itadData: any | null
 ): Promise<PriceAnalysis> {
   const currentPrice = steamData.price;
   
   // Handle case where ITAD data is missing
-  const priceHistory = itadData?.priceHistory 
-    ? calculatePriceStatistics(itadData.priceHistory)
-    : {
+  const priceHistory: PriceHistoryInfo = {
         lowestPrice: currentPrice * 0.8,
         highestPrice: currentPrice * 1.2,
         averagePrice: currentPrice,
@@ -301,7 +296,7 @@ function calculateOptimizationScore(currentPrice: number, optimalPrice: number):
  * Calculate market trend based on price history and player data
  */
 function calculateMarketTrend(
-  priceHistory: ReturnType<typeof calculatePriceStatistics>,
+  priceHistory: PriceHistoryInfo,
   steamSpyData: SteamSpyGameData
 ): 'bullish' | 'bearish' | 'neutral' {
   const priceTrend = priceHistory.priceTrend;
@@ -382,19 +377,18 @@ function calculateSeasonalDemand(): number {
  * Calculate price elasticity of demand
  */
 function calculatePriceElasticity(
-  priceHistory: ReturnType<typeof calculatePriceStatistics>,
+  priceHistory: PriceHistoryInfo,
   demandScore: number
 ): number {
   // Simplified price elasticity calculation
   // In reality, this would require historical demand data at different price points
-  
   const priceVolatility = priceHistory.priceVolatility;
   const averagePrice = priceHistory.averagePrice;
-  
+
   // Highly volatile prices suggest more elastic demand (people wait for sales)
   // Higher demand score can mean less elastic demand (people want it now)
   const elasticity = (priceVolatility * 2) - (demandScore / 100);
-  
+
   return Math.max(0.5, Math.min(elasticity, 3.0)); // Clamp elasticity
 }
 
@@ -403,7 +397,7 @@ function calculatePriceElasticity(
  */
 function generateRecommendations(
   factors: any,
-  priceHistory: ReturnType<typeof calculatePriceStatistics>,
+  priceHistory: PriceHistoryInfo,
   currentPrice: number
 ): string[] {
   const recommendations: string[] = [];
@@ -432,10 +426,13 @@ function generateRecommendations(
   return recommendations;
 }
 
+/**
+ * A simplified optimal price calculation
+ */
 function calculateOptimalPrice(
   currentPrice: number,
   factors: any,
-  priceHistory: ReturnType<typeof calculatePriceStatistics>
+  priceHistory: PriceHistoryInfo
 ): number {
   // A more sophisticated model would use machine learning.
   // For now, let's use a formula-based approach based on our factors.
@@ -462,16 +459,19 @@ function calculateOptimalPrice(
   return Math.round(recommendedPrice / 100) * 100 - 1;
 }
 
+/**
+ * Calculate confidence in the recommended price
+ */
 function calculatePriceConfidence(
   factors: any,
-  priceHistory: ReturnType<typeof calculatePriceStatistics>
+  priceHistory: PriceHistoryInfo
 ): number {
   // Base confidence on a few key factors
   const reviewScoreFactor = factors.reviewScore; // 0-1
   const ageFactor = factors.age; // 0-1 (newer is higher)
   const priceVolatilityFactor = 1 - priceHistory.priceVolatility; // 0-1 (less volatile is higher)
   const demandScoreFactor = factors.popularity;
-
+ 
   // Simple weighted average
   const confidence =
     (reviewScoreFactor * 0.3 +
@@ -564,7 +564,7 @@ function createMockAnalysis(appId: number): PriceAnalysis {
   const marketTrend = 'bullish';
   const priceConfidence = 87;
 
-  const priceHistory = {
+  const priceHistory: PriceHistoryInfo = {
     lowestPrice: 999,
     highestPrice: 2499,
     averagePrice: 1899,
