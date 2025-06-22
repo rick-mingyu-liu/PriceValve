@@ -87,21 +87,6 @@ export default function HomePage() {
             PriceValve
           </motion.a>
         </motion.div>
-        <div className="flex space-x-8 items-center">
-          {["Contact"].map((item, index) => (
-            <motion.a
-              key={item}
-              href="/contact"
-              className="hover:text-[#00D4FF] transition-colors cursor-pointer"
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 + index * 0.1 }}
-              whileHover={{ y: -2 }}
-            >
-              {item}
-            </motion.a>
-          ))}
-        </div>
       </motion.nav>
       {/* Hero Section */}
       <section ref={heroRef} className="min-h-screen flex items-center px-8 py-10 relative">
