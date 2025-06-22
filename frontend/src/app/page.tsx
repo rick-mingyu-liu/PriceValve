@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { extractAppIdFromUrl, isValidSteamUrl } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import { Navbar } from "@/components/Navbar"
+import { GameSelector } from "@/components/GameSelector"
 
 // Animated Counter Component
 function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number }) {
@@ -494,6 +495,33 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+      {/* Game Discovery Section */}
+      <section className="px-8 py-20">
+        <div className="max-w-6xl mx-auto">
+          <motion.h2
+            initial={{ y: 50, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-4xl font-bold text-center mb-16"
+          >
+            Discover Games (PriceValveScript.js Style) 🎮
+          </motion.h2>
+          
+          <motion.p
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="text-xl text-gray-300 text-center mb-12 max-w-3xl mx-auto"
+          >
+            Search for games, find similar titles, and get instant pricing analysis. 
+            Just like the PriceValveScript.js functionality, but with a modern interface.
+          </motion.p>
+
+          <GameSelector />
         </div>
       </section>
       {/* Footer */}

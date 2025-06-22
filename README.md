@@ -15,6 +15,7 @@ PriceWave is an intelligent pricing platform that analyzes Steam games in real-t
 - **🎯 Price Recommendations**: AI-generated pricing suggestions with confidence scores
 - **📱 Modern Web Interface**: Beautiful React/Next.js frontend with real-time updates
 - **🏆 Competitor Comparison**: Comprehensive analysis of similar games and market positioning
+- **🎮 Game Discovery**: PriceValveScript.js-inspired game search and selection functionality
 
 ## 🏗️ Project Architecture
 
@@ -34,7 +35,13 @@ PriceValve/
 ├── 📁 frontend/                   # Next.js 15 Frontend
 │   ├── src/
 │   │   ├── 📁 app/                # Next.js App Router
+│   │   │   └── 📁 analyze/        # Game analysis pages
 │   │   ├── 📁 components/         # React components (shadcn/ui)
+│   │   │   ├── 📁 analysis/       # Analysis result components
+│   │   │   ├── 📁 ui/             # UI components
+│   │   │   ├── GameSelector.tsx   # Game discovery component
+│   │   │   ├── Navbar.tsx         # Navigation component
+│   │   │   └── SteamGameCard.tsx  # Game card component
 │   │   ├── 📁 lib/                # Utility functions
 │   │   └── 📁 utils/              # API client & utilities
 │   ├── package.json
@@ -50,6 +57,7 @@ PriceValve/
 │   ├── 📁 types/                  # TypeScript interfaces
 │   └── 📁 migrations/             # Database migrations
 ├── 📁 docs/                       # Documentation
+├── PriceValveScript.js           # Core game management script
 ├── package.json                   # Root package.json
 └── README.md
 ```
@@ -113,6 +121,52 @@ PriceValve/
    - Frontend: http://localhost:3000
    - Backend: http://localhost:3001
 
+## 🎮 Frontend Features
+
+### Game Discovery & Selection
+
+The frontend includes a focused `GameSelector` component that provides core PriceValveScript.js functionality:
+
+#### **GameSelector Component**
+- **Game Search**: Search games by name, developer, or genre (like PriceValveScript.js search)
+- **Similar Games Discovery**: Find games in the same cluster (like `getSimilarGames()`)
+- **Game Selection**: Pick games with visual feedback (like `pickGame()` and `pickGameByName()`)
+- **One-Click Analysis**: Instant access to comprehensive pricing analysis
+- **Cluster-based Filtering**: Visual cluster indicators for similar games
+
+#### **PriceValveScript.js Integration**
+The frontend implements the core functionality from `PriceValveScript.js`:
+
+```typescript
+// Game Class Properties (Frontend Implementation)
+interface Game {
+  appId: number;           // Steam App ID
+  name: string;            // Game name
+  price: number;           // Current price
+  developer: string;       // Developer name
+  cluster?: string;        // Cluster group for similar games
+  // ... additional properties
+}
+
+// GameSelector Methods (Frontend Implementation)
+class GameSelector {
+  searchGames(query)       // Search by name/developer/genre
+  getSimilarGames(game)    // Find similar games by cluster
+  pickGame(game)           // Select game for analysis
+  handleGameSelect(game)   // Game selection callback
+}
+```
+
+### Analysis Components
+
+- **GameHeader**: Game information display with optimization score
+- **PricingAnalysisResults**: Detailed pricing recommendations
+- **RecommendedActions**: Actionable insights and next steps
+- **AnalysisCharts**: Interactive charts for competitor and trend analysis
+- **ExecutiveSummary**: High-level analysis summary
+- **PriceOptimizationCard**: Price optimization recommendations
+- **TimingOptimizationCard**: Launch timing recommendations
+
 ## 📊 Data Models
 
 ### Core Game Data Model
@@ -138,6 +192,9 @@ interface Game {
   
   // Revenue Optimization Predictions
   revenuePredictions: RevenuePredictions;
+  
+  // PriceValveScript.js Properties
+  cluster?: string;                 // Cluster group for similar games
   
   // Metadata
   tags: GameTag[];
@@ -209,29 +266,41 @@ python scripts/train_competitor_analysis.py
 ## 🔌 API Endpoints
 
 ### Game Analysis
-- `GET /api/games/:appId` - Get game analysis
-- `POST /api/games/analyze` - Analyze multiple games
-- `GET /api/games/search` - Search games
+- `POST /api/analyze` - Analyze a single game
+- `POST /api/analyze/batch` - Analyze multiple games
+- `GET /api/search` - Search games
+- `GET /api/featured` - Get featured games
+- `GET /api/top-games` - Get top games
+- `GET /api/genres` - Get all genres
+- `GET /api/genres/:genre` - Get games by genre
 
-### Revenue Optimization Predictions
-- `GET /api/revenue/predict/:appId` - Get revenue optimization predictions
-- `POST /api/revenue/train` - Retrain models
-- `GET /api/revenue/status` - Model status
+### Individual Data
+- `GET /api/steam/:appId` - Steam game data
+- `GET /api/steamspy/:appId` - SteamSpy data
 
-### Steam Integration
-- `GET /api/steam/game/:appId` - Steam game data
-- `GET /api/steam/price/:appId` - Price data
-- `GET /api/steam/reviews/:appId` - Review data
+### Health Check
+- `GET /api/health` - API health status
 
 ## 🎨 Frontend Components
 
 Built with **shadcn/ui** and **Tailwind CSS**:
 
-- `GameCard` - Game information display
-- `PriceChart` - Interactive price charts
-- `SentimentWidget` - Sentiment analysis display
-- `RevenuePredictions` - Revenue optimization prediction results
-- `CompetitorComparison` - Competitor analysis display
+### Core Components
+- `GameSelector` - Game search and discovery interface (PriceValveScript.js style)
+- `Navbar` - Navigation component
+- `SteamGameCard` - Game information card
+
+### Analysis Components
+- `GameHeader` - Game information display
+- `PricingAnalysisResults` - Pricing recommendations
+- `RecommendedActions` - Actionable insights
+- `AnalysisCharts` - Interactive charts
+- `ExecutiveSummary` - Analysis summary
+- `PriceOptimizationCard` - Price optimization
+- `TimingOptimizationCard` - Timing recommendations
+
+### UI Components
+- `Button` - Styled button component
 - `SearchBar` - Game search functionality
 
 ## 📈 Data Sources
