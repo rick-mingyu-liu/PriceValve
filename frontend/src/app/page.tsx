@@ -123,10 +123,11 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-xl text-gray-300 leading-relaxed"
             >
-              Drop your Steam URL, get math-backed pricing advice in seconds. 
+              Drop your Steam URL. 
+              Get mathematically-optimized pricing advice in seconds. 
               No guesswork, just data.
               <br />
-              Let's make more money!
+              <span className="italic">Let's make more money!</span>
             </motion.p>
 
             <motion.div
