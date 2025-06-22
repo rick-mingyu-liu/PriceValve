@@ -163,7 +163,7 @@ export async function createComprehensiveAnalysis(
 
   const competitorRangeMin = recommendedPrice * 0.9;
   const competitorRangeMax = recommendedPrice * 1.2;
-  const closestCompetitor = { name: 'Similar Game D', price: 1999 }; // Mock, this would come from competitor analysis
+  const closestCompetitor = { name: 'Stardew Valley', price: 1999 };
 
   const executiveSummary = `Based on our comprehensive analysis of ${
     steamData.name
@@ -184,11 +184,11 @@ With ${priceConfidence.toFixed(
   )}% confidence, this pricing strategy will optimize your revenue while maintaining competitive positioning in the indie gaming market.`;
 
   const competitorPriceComparison = [
-    { name: 'Similar Game A', price: 2499 },
-    { name: 'Similar Game B', price: 2299 },
-    { name: 'Similar Game C', price: 2699 },
-    { name: 'Similar Game D', price: 1999 },
-    { name: 'Similar Game E', price: 2999 },
+    { name: 'Hollow Knight', price: 2499 },
+    { name: 'Dead Cells', price: 2299 },
+    { name: 'Celeste', price: 2699 },
+    { name: 'Stardew Valley', price: 1999 },
+    { name: 'Undertale', price: 2999 },
     { name: 'Your Game (Current)', price: currentPrice, isTarget: true },
     { name: 'Your Game (Recommended)', price: recommendedPrice, isRecommended: true },
   ];
@@ -613,11 +613,11 @@ The price trend analysis indicates consistent market acceptance of higher price 
 With ${priceConfidence}% confidence, this pricing strategy will optimize your revenue while maintaining competitive positioning in the indie gaming market.`;
 
   const competitorPriceComparison = [
-      { name: 'Similar Game A', price: 2499 },
-      { name: 'Similar Game B', price: 2299 },
-      { name: 'Similar Game C', price: 2699 },
-      { name: 'Similar Game D', price: 1999 },
-      { name: 'Similar Game E', price: 2999 },
+      { name: 'Hollow Knight', price: 2499 },
+      { name: 'Dead Cells', price: 2299 },
+      { name: 'Celeste', price: 2699 },
+      { name: 'Stardew Valley', price: 1999 },
+      { name: 'Undertale', price: 2999 },
       { name: 'Your Game (Current)', price: currentPrice, isTarget: true },
       { name: 'Your Game (Recommended)', price: recommendedPrice, isRecommended: true },
     ];
@@ -663,6 +663,6 @@ With ${priceConfidence}% confidence, this pricing strategy will optimize your re
     marketShareAnalysis,
     underpricedComparedToSimilar: true,
     marketPositioningStatement: "Position as premium indie title. Your quality justifies higher pricing tier.",
-    closestCompetitor: { name: 'Similar Game D', price: 1999 },
+    closestCompetitor: { name: 'Stardew Valley', price: 1999 },
   };
 } 

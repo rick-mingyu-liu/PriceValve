@@ -1,6 +1,6 @@
 "use client";
 
-import { DollarSign, Calendar, Target, Users } from 'lucide-react';
+import { DollarSign, Calendar, Target, Users, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 
@@ -56,6 +56,7 @@ interface RecommendedActionsProps {
   underpricedComparedToSimilar: boolean;
   marketPositioningStatement: string;
   closestCompetitorName: string;
+  competitorPriceComparison?: Array<{ name: string; price: number; isTarget?: boolean; isRecommended?: boolean }>;
 }
 
 export const RecommendedActions: React.FC<RecommendedActionsProps> = ({
@@ -65,7 +66,17 @@ export const RecommendedActions: React.FC<RecommendedActionsProps> = ({
   underpricedComparedToSimilar,
   marketPositioningStatement,
   closestCompetitorName,
+  competitorPriceComparison = [],
 }) => {
+  // Get top competitors for more specific recommendations
+  const topCompetitors = competitorPriceComparison
+    .filter(comp => !comp.isTarget)
+    .sort((a, b) => b.price - a.price)
+    .slice(0, 3);
+
+  const priceDirection = recommendedPrice > currentPrice ? 'increase' : 'decrease';
+  const priceChange = Math.abs(recommendedPrice - currentPrice);
+
   return (
     <section>
        <div className="text-center mb-8">
@@ -90,8 +101,12 @@ export const RecommendedActions: React.FC<RecommendedActionsProps> = ({
         <ActionCard
           icon={<DollarSign className="w-6 h-6 text-white" />}
           iconBgColor="bg-green-600/30"
-          title="Increase Base Price"
-          description={`Your game is underpriced compared to similar titles. Increase from $${(currentPrice / 100).toFixed(2)} to $${(recommendedPrice / 100).toFixed(2)}.`}
+          title={priceDirection === 'increase' ? "Increase Base Price" : "Adjust Base Price"}
+          description={
+            priceDirection === 'increase' 
+              ? `Your game is underpriced compared to similar titles. Increase from $${(currentPrice / 100).toFixed(2)} to $${(recommendedPrice / 100).toFixed(2)}.`
+              : `Consider adjusting your price from $${(currentPrice / 100).toFixed(2)} to $${(recommendedPrice / 100).toFixed(2)} for better market positioning.`
+          }
           benefit={`+${revenueIncrease.toFixed(0)}% revenue potential`}
           priority="High"
         />
@@ -99,7 +114,11 @@ export const RecommendedActions: React.FC<RecommendedActionsProps> = ({
           icon={<Target className="w-6 h-6 text-white" />}
           iconBgColor="bg-red-600/30"
           title="Market Positioning"
-          description={marketPositioningStatement}
+          description={
+            closestCompetitorName 
+              ? `${marketPositioningStatement} Focus on differentiating from ${closestCompetitorName}.`
+              : marketPositioningStatement
+          }
           benefit="Better brand perception"
           priority="High"
         />
@@ -115,11 +134,41 @@ export const RecommendedActions: React.FC<RecommendedActionsProps> = ({
           icon={<Users className="w-6 h-6 text-white" />}
           iconBgColor="bg-sky-600/30"
           title="Competitor Analysis"
-          description={`Monitor ${closestCompetitorName} - they're your closest competitor at the same price point.`}
+          description={
+            topCompetitors.length > 0
+              ? `Monitor ${topCompetitors.map(c => c.name).join(', ')} - they're your key competitors in this price range.`
+              : `Monitor ${closestCompetitorName} - they're your closest competitor at the same price point.`
+          }
           benefit="Stay competitive"
           priority="Low"
         />
       </motion.div>
+
+      {/* Additional Competitor Insights */}
+      {topCompetitors.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-8 bg-slate-900/30 border border-slate-800 rounded-xl p-6"
+        >
+          <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+            <TrendingUp className="w-5 h-5 mr-2 text-[#00D4FF]" />
+            Key Competitor Insights
+          </h3>
+          <div className="grid md:grid-cols-3 gap-4">
+            {topCompetitors.map((competitor, index) => (
+              <div key={index} className="bg-slate-800/50 rounded-lg p-4">
+                <h4 className="font-semibold text-white text-sm">{competitor.name}</h4>
+                <p className="text-[#00D4FF] font-bold">${(competitor.price / 100).toFixed(2)}</p>
+                <p className="text-slate-400 text-xs mt-1">
+                  {competitor.price > currentPrice ? 'Higher priced' : 'Lower priced'} than your game
+                </p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 }; 

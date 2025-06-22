@@ -230,6 +230,7 @@ export default function AnalysisPage() {
             underpricedComparedToSimilar={priceAnalysis.underpricedComparedToSimilar}
             marketPositioningStatement={priceAnalysis.marketPositioningStatement}
             closestCompetitorName={priceAnalysis.closestCompetitor.name}
+            competitorPriceComparison={priceAnalysis.competitorPriceComparison}
           />
 
           <AnalysisCharts
