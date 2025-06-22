@@ -1,24 +1,30 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { gameController } from '../controllers/gameController';
 
 const router = Router();
 
+// Helper function to wrap async route handlers
+const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) => 
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+
 // Analysis endpoints
-router.post('/analyze', gameController.analyzeGame);
-router.post('/analyze/batch', gameController.analyzeBatchGames);
+router.post('/analyze', asyncHandler(gameController.analyzeGame));
+router.post('/analyze/batch', asyncHandler(gameController.analyzeBatchGames));
 
 // Search and discovery endpoints
-router.get('/search', gameController.searchGames);
-router.get('/featured', gameController.getFeaturedGames);
-router.get('/top-games', gameController.getTopGames);
-router.get('/genres', gameController.getAllGenres);
-router.get('/genres/:genre', gameController.getGamesByGenre);
+router.get('/search', asyncHandler(gameController.searchGames));
+router.get('/featured', asyncHandler(gameController.getFeaturedGames));
+router.get('/top-games', asyncHandler(gameController.getTopGames));
+router.get('/genres', asyncHandler(gameController.getAllGenres));
+router.get('/genres/:genre', asyncHandler(gameController.getGamesByGenre));
 
 // Individual data endpoints
-router.get('/steam/:appId', gameController.getSteamData);
-router.get('/steamspy/:appId', gameController.getSteamSpyData);
+router.get('/steam/:appId', asyncHandler(gameController.getSteamData));
+router.get('/steamspy/:appId', asyncHandler(gameController.getSteamSpyData));
 
 // Health check
-router.get('/health', gameController.healthCheck);
+router.get('/health', asyncHandler(gameController.healthCheck));
 
 export default router; 

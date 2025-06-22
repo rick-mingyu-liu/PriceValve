@@ -309,8 +309,9 @@ function calculateOptimalPrice(
   const elasticity = factors.priceElasticity;
   const averagePrice = priceHistory.averagePrice;
   
-  if (elasticity === -1) {
-    // If elasticity is -1, revenue is maximized at current price
+  // Check if elasticity is valid and not zero
+  if (!elasticity || elasticity === 0 || elasticity === -1) {
+    // If elasticity is invalid, -1, or 0, revenue is maximized at current price
     return currentPrice;
   }
   
@@ -337,8 +338,11 @@ function calculatePriceConfidence(
 ): number {
   // Higher confidence with more data and consistent factors
   const dataQuality = priceHistory.priceVolatility > 0 ? 0.8 : 0.4;
-  const factorConsistency = Object.values(factors).reduce((sum: number, factor: any) => sum + factor, 0) / Object.keys(factors).length;
-  
+  const factorValues = Object.values(factors).filter((v) => typeof v === 'number' && !isNaN(v)) as number[];
+  const factorConsistency = factorValues.length > 0
+    ? factorValues.reduce((sum, factor) => sum + factor, 0) / factorValues.length
+    : 0.5;
+
   return Math.min((dataQuality + factorConsistency) / 2, 1) * 100;
 }
 
