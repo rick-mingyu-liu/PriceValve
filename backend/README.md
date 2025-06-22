@@ -1,6 +1,6 @@
 # PriceValve Backend API
 
-A comprehensive Express.js backend for Steam game data analysis using SteamSpy and Steam Review APIs.
+A comprehensive Express.js backend for Steam game data analysis using SteamSpy and Steam Review APIs. This is a pure data fetching service with no database operations.
 
 ## 🚀 Quick Start
 
@@ -10,7 +10,7 @@ npm install
 
 # Set up environment variables
 cp env.example .env
-# Edit .env with your MongoDB URI
+# Edit .env with your configuration
 
 # Start development server
 npm run dev
@@ -31,9 +31,6 @@ NODE_ENV=development
 
 # Frontend URL (for CORS)
 FRONTEND_URL=http://localhost:3000
-
-# Database Configuration (MongoDB)
-MONGODB_URI=mongodb://localhost:27017/pricevalve
 
 # Redis Configuration (optional, for caching)
 REDIS_URL=redis://localhost:6379
@@ -73,8 +70,7 @@ POST /api/fetch
 {
   "type": "single",
   "appId": 730,
-  "includeReviews": true,
-  "uploadToDb": true
+  "includeReviews": true
 }
 ```
 
@@ -83,8 +79,7 @@ POST /api/fetch
 {
   "type": "multiple",
   "appIds": [730, 570, 440],
-  "includeReviews": true,
-  "uploadToDb": true
+  "includeReviews": true
 }
 ```
 
@@ -93,8 +88,7 @@ POST /api/fetch
 {
   "type": "trending",
   "limit": 10,
-  "includeReviews": true,
-  "uploadToDb": true
+  "includeReviews": true
 }
 ```
 
@@ -104,8 +98,7 @@ POST /api/fetch
   "type": "search",
   "query": "counter-strike",
   "limit": 5,
-  "includeReviews": true,
-  "uploadToDb": true
+  "includeReviews": true
 }
 ```
 
@@ -113,10 +106,9 @@ POST /api/fetch
 ```json
 {
   "type": "genre",
-  "query": "Action",
+  "genre": "Action",
   "limit": 10,
-  "includeReviews": true,
-  "uploadToDb": true
+  "includeReviews": true
 }
 ```
 
@@ -124,10 +116,9 @@ POST /api/fetch
 ```json
 {
   "type": "tag",
-  "query": "Multiplayer",
+  "tag": "Multiplayer",
   "limit": 10,
-  "includeReviews": true,
-  "uploadToDb": true
+  "includeReviews": true
 }
 ```
 
@@ -148,21 +139,16 @@ backend/
 │   │   └── apiController.ts   # API controller logic
 │   ├── services/
 │   │   ├── dataFetchingService.ts    # Core data fetching logic
-│   │   ├── gameDataService.ts        # Combined fetch and upload service
-│   │   ├── mongoUploadService.ts     # MongoDB upload operations
+│   │   ├── gameDataService.ts        # Game data service
 │   │   ├── steamSpyApi.ts            # SteamSpy API integration
 │   │   ├── steamReviewApi.ts         # Steam Review API integration
 │   │   └── gameService.ts            # Game data operations
-│   ├── models/
-│   │   └── Game.ts                   # Game data model
 │   ├── middleware/
 │   │   └── errorHandler.ts           # Error handling middleware
 │   ├── types/
 │   │   ├── index.ts                  # Main type exports
 │   │   ├── game.ts                   # Game data types
 │   │   └── steamSpy.ts               # SteamSpy API types
-│   ├── config/
-│   │   └── database.ts               # Database configuration
 │   └── utils/
 │       └── helpers.ts                # Utility functions
 ├── PriceValve-API.postman_collection.json  # Postman collection
@@ -198,76 +184,65 @@ interface ApiResponse<T> {
     "salesHistory": [...],
     "developer": "Valve",
     "publisher": "Valve",
-    "owners": "100,000,000 .. 200,000,000",
-    "averagePlaytime": 32383,
-    "discountPercent": "0",
-    "reviewScore": 8,
+    "reviewScore": 88,
     "reviewScoreDesc": "Very Positive",
-    "totalReviews": 4551682,
-    "totalPositive": 3920527,
-    "totalNegative": 631155
+    "owners": "50,000,000 .. 100,000,000",
+    "averagePlaytime": 120
   },
-  "sources": {
-    "steamSpy": true,
-    "steamReview": true
-  },
-  "timestamp": "2025-06-21T23:45:13.962Z",
-  "message": "Game data fetched successfully"
+  "message": "Game data fetched successfully",
+  "timestamp": "2024-01-15T10:30:00.000Z"
 }
 ```
 
-## 🗄️ Database Schema
+### Error Response Example
+```json
+{
+  "success": false,
+  "error": "Game not found",
+  "message": "Failed to fetch game data",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
 
-The Game model includes comprehensive game data:
+## 🔄 Fetch Options
+
+The `options` parameter in fetch requests supports:
 
 ```typescript
-interface Game {
-  appId: number;
-  name: string;
-  isFree: boolean;
-  price: string;
-  tags: string[];
-  salesHistory: SalesHistory[];
-  developer: string;
-  publisher: string;
-  owners: string;
-  averagePlaytime: number;
-  discountPercent: string;
-  steamReview: {
-    reviewScore: number;
-    reviewScoreDesc: string;
-    totalReviews: number;
-    totalPositive: number;
-    totalNegative: number;
-  };
-  createdAt: Date;
-  updatedAt: Date;
+interface FetchOptions {
+  includeReviews?: boolean;      // Include Steam review data
+  includeSalesHistory?: boolean; // Include sales history data
 }
 ```
 
-## 🚀 Deployment
+## 📈 Data Sources
 
-### Docker
-```bash
-# Build image
-docker build -t pricevalve-backend .
+### SteamSpy Data
+- Game metadata (name, developer, publisher)
+- Ownership statistics
+- Price information
+- Tags and genres
+- Sales history (if available)
 
-# Run container
-docker run -p 5001:5001 --env-file .env pricevalve-backend
-```
+### Steam Review Data
+- Review scores (0-100)
+- Review categories (Overwhelmingly Positive, Very Positive, etc.)
+- Sentiment analysis
 
-### Docker Compose
-```bash
-# Start with MongoDB
-docker-compose up -d
-```
+## 🚀 Performance Features
 
-## 📝 Testing
+- **Caching**: Redis-based caching for API responses
+- **Rate Limiting**: Built-in delays between API calls
+- **Batch Processing**: Efficient handling of multiple games
+- **Error Handling**: Graceful handling of API failures
 
-Use the provided Postman collection:
+## 🧪 Testing
+
+Test the API using the provided Postman collection:
+
 1. Import `PriceValve-API.postman_collection.json`
-2. Set up environment variables
-3. Test all endpoints
+2. Set the base URL to `http://localhost:5001`
+3. Try different fetch types and parameters
 
 ## 🔧 Development
 
@@ -283,4 +258,11 @@ npm run build
 
 # Start production server
 npm start
-``` 
+```
+
+## 📝 Notes
+
+- This is a pure data fetching service with no database operations
+- All data is fetched in real-time from external APIs
+- Caching is used to improve performance and reduce API calls
+- The service is designed to be stateless and scalable 

@@ -4,24 +4,17 @@ import { apiController } from '../controllers/apiController';
 const router = express.Router();
 
 /**
- * @route POST /api/fetch
- * @desc Main data fetching endpoint - handles everything!
- * @access Public
+ * API Routes for PriceValve
+ * All endpoints are prefixed with /api
  */
-router.post('/fetch', apiController.fetchData);
 
-/**
- * @route GET /api/health
- * @desc Health check and system status
- * @access Public
- */
+// Main data fetching endpoint
+router.post('/fetch', apiController.fetch);
+
+// Health check endpoint
 router.get('/health', apiController.health);
 
-/**
- * @route DELETE /api/cache
- * @desc Clear the cache
- * @access Public
- */
+// Cache management endpoint
 router.delete('/cache', apiController.clearCache);
 
 export default router; 

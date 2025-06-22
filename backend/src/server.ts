@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import apiRoutes from './routes/apiRoutes';
-import { connectDatabase } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 import dotenv from 'dotenv';
+
 // Load environment variables
 dotenv.config();
 
@@ -11,14 +11,10 @@ dotenv.config();
 console.log('🔧 Environment variables loaded:');
 console.log('   PORT:', process.env.PORT);
 console.log('   STEAM_API_KEY:', process.env.STEAM_API_KEY ? '✅ Found' : '❌ Not found');
-console.log('   MONGODB_URI:', process.env.MONGODB_URI ? '✅ Found' : '❌ Not found');
 console.log('');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
-
-// Connect to MongoDB
-connectDatabase().catch(console.error);
 
 // Middleware
 app.use(cors({
@@ -39,13 +35,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Main API routes - that's it!
+// Main API routes
 app.use('/api', apiRoutes);
 
 // Error handler
 app.use(errorHandler);
 
-// 404 fallback route - use correct Express wildcard syntax
+// 404 fallback route
 app.use((req, res) => {
   console.log(`❌ 404 - Route not found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({ 
@@ -70,10 +66,6 @@ app.listen(PORT, () => {
   console.log('   GET  /api/health - Health check and system status');
   console.log('   DELETE /api/cache - Clear cache');
   console.log('');
-
-  if (!process.env.MONGODB_URI) {
-    console.warn('⚠️  MONGODB_URI not found - using default local MongoDB');
-  }
 });
 
 export default app;
