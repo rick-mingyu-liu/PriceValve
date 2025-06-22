@@ -1,8 +1,8 @@
 {
-  "name": "pricewave",
+  "name": "pricevalve",
   "version": "1.0.0",
   "type": "module",
-  "description": "A full-stack application for tracking Steam game prices",
+  "description": "A full-stack application for managing Steam game prices",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
