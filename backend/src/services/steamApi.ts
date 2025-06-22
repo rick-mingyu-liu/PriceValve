@@ -48,7 +48,6 @@ export interface SteamGameDetails {
     };
   }>;
   background: string;
-  movies: any[];
 }
 
 export interface SteamSearchResult {
