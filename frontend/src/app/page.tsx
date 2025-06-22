@@ -36,6 +36,8 @@ export default function HomePage() {
   const isHeroInView = useInView(heroRef)
   const isFeaturesInView = useInView(featuresRef)
   const [isClient, setIsClient] = useState(false)
+  const [steamUrl, setSteamUrl] = useState("")
+  const [ctaSteamUrl, setCtaSteamUrl] = useState("")
 
   // Parallax effects
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -50])
@@ -53,6 +55,13 @@ export default function HomePage() {
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  const handleAnalyze = (url: string) => {
+    if (url.trim()) {
+      console.log("Analyzing Steam game:", url)
+      // Here you would typically send the URL to your backend for analysis
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-[#1a1a2e] to-[#16213e] text-white overflow-hidden">
@@ -82,7 +91,7 @@ export default function HomePage() {
           {["Contact"].map((item, index) => (
             <motion.a
               key={item}
-              href="#"
+              href="/contact"
               className="hover:text-[#00D4FF] transition-colors cursor-pointer"
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -92,13 +101,6 @@ export default function HomePage() {
               {item}
             </motion.a>
           ))}
-          <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button className="bg-transparent border border-[#00D4FF] text-[#00D4FF] hover:bg-[#00D4FF] hover:text-white px-4 py-2 text-sm">
-                Login
-              </Button>
-            </motion.div>
-          </motion.div>
         </div>
       </motion.nav>
       {/* Hero Section */}
@@ -141,10 +143,21 @@ export default function HomePage() {
               initial={{ y: 50, opacity: 0 }}
               animate={isHeroInView ? { y: 0, opacity: 1 } : {}}
               transition={{ duration: 0.8, delay: 0.8 }}
+              className="w-full space-y-4"
             >
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block">
-                <Button className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg rounded-lg transition-all duration-300 group">
-                  Get Started
+              <input
+                type="url"
+                value={steamUrl}
+                onChange={(e) => setSteamUrl(e.target.value)}
+                placeholder="Paste your Steam game URL here..."
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00D4FF] focus:border-transparent text-white placeholder-gray-400"
+              />
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full">
+                <Button
+                  onClick={() => handleAnalyze(steamUrl)}
+                  className="w-full bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-3 text-lg rounded-lg transition-all duration-300 group"
+                >
+                  Analyze Game
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </motion.div>
@@ -481,24 +494,36 @@ export default function HomePage() {
           </motion.p>
 
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-8"
+            className="mb-8"
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block">
-              <Button className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-4 text-lg group">
-                Sign Up Now
-                <motion.span
-                  className="ml-2"
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+            <div className="flex gap-3 max-w-4xl mx-auto">
+              <input
+                type="url"
+                value={ctaSteamUrl}
+                onChange={(e) => setCtaSteamUrl(e.target.value)}
+                placeholder="Paste your Steam game URL here..."
+                className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00D4FF] focus:border-transparent text-white placeholder-gray-400"
+              />
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={() => handleAnalyze(ctaSteamUrl)}
+                  className="bg-[#00D4FF] hover:bg-[#00B8E6] text-white px-8 py-3 text-lg rounded-lg transition-all duration-300 group whitespace-nowrap"
                 >
-                  🚀
-                </motion.span>
-              </Button>
-            </motion.div>
+                  Get Free Analysis
+                  <motion.span
+                    className="ml-2"
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                  >
+                    🚀
+                  </motion.span>
+                </Button>
+              </motion.div>
+            </div>
           </motion.div>
 
           <motion.p
