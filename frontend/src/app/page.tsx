@@ -6,6 +6,7 @@ import { ArrowRight, Check, X, Target, Search, TrendingUp, Gamepad2, AlertCircle
 import { Button } from "@/components/ui/button"
 import { extractAppIdFromUrl, isValidSteamUrl } from "@/lib/api"
 import { useRouter } from "next/navigation"
+import { Navbar } from "@/components/Navbar"
 
 // Animated Counter Component
 function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number }) {
@@ -99,29 +100,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-[#1a1a2e] to-[#16213e] text-white overflow-hidden">
       {/* Navigation */}
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="flex items-center justify-between px-8 py-6 relative z-40"
-      >
-        <motion.div
-          className="text-2xl font-bold flex items-center"
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 400 }}
-        >
-          <motion.a
-            href="#"
-            className="text-2xl font-bold flex items-center cursor-pointer"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400 }}
-          >
-            <Gamepad2 className="w-8 h-8 mr-2 text-[#00D4FF]" />
-            PriceValve
-          </motion.a>
-        </motion.div>
-        
-      </motion.nav>
+      <Navbar />
       {/* Hero Section */}
       <section ref={heroRef} className="min-h-screen flex items-center px-8 py-10 relative">
         <motion.div

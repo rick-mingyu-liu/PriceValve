@@ -73,6 +73,24 @@ export interface ITADComprehensiveData {
   gameInfo: any;
 }
 
+export interface CompetitorPrice {
+  name: string;
+  price: number;
+  isTarget?: boolean;
+  isRecommended?: boolean;
+}
+
+export interface PriceTrendPoint {
+  month: string;
+  currentPrice: number;
+  recommendedPrice: number;
+}
+
+export interface MarketSharePoint {
+  name: string;
+  marketShare: number;
+}
+
 export interface PriceAnalysis {
   appId: number;
   name: string;
@@ -98,6 +116,19 @@ export interface PriceAnalysis {
     priceElasticity: number;
   };
   recommendations: string[];
+  optimizationScore: number;
+  status: 'optimized' | 'attention' | 'action_needed';
+  urgency: 'high' | 'medium' | null;
+  revenueIncrease: number; // as a percentage
+  timingRecommendation: string;
+  timingReason: string;
+  executiveSummary: string;
+  competitorPriceComparison: CompetitorPrice[];
+  priceTrendAnalysis: PriceTrendPoint[];
+  marketShareAnalysis: MarketSharePoint[];
+  underpricedComparedToSimilar: boolean;
+  marketPositioningStatement: string;
+  closestCompetitor: { name: string; price: number };
 }
 
 export interface ComprehensiveAnalysis {

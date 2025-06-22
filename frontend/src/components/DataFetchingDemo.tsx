@@ -1,7 +1,30 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Game } from '../../../data-models/types/game';
+
+interface GameData {
+  appId: number;
+  name: string;
+  price: number;
+  discountPercent?: number;
+  isFree: boolean;
+  releaseDate?: string;
+  developer?: string;
+  publisher?: string;
+  owners?: string;
+  positive?: number;
+  negative?: number;
+  tags?: string[];
+  averagePlaytime?: number;
+  reviewScore?: number;
+  totalReviews?: number;
+  shortDescription?: string;
+  salesHistory: Array<{
+    date: string;
+    owners: number;
+    price: number;
+  }>;
+}
 
 interface DataFetchingDemoProps {
   apiUrl?: string;
@@ -9,7 +32,7 @@ interface DataFetchingDemoProps {
 
 export default function DataFetchingDemo({ apiUrl = 'http://localhost:3001/api' }: DataFetchingDemoProps) {
   const [appId, setAppId] = useState('730'); // Counter-Strike 2
-  const [gameData, setGameData] = useState<Game | null>(null);
+  const [gameData, setGameData] = useState<GameData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [includeReviews, setIncludeReviews] = useState(true);
@@ -226,7 +249,7 @@ export default function DataFetchingDemo({ apiUrl = 'http://localhost:3001/api' 
               <div className="mt-6">
                 <h4 className="font-semibold mb-2">Tags</h4>
                 <div className="flex flex-wrap gap-2">
-                  {gameData.tags.slice(0, 10).map((tag, index) => (
+                  {gameData.tags.slice(0, 10).map((tag: string, index: number) => (
                     <span
                       key={index}
                       className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
@@ -247,8 +270,8 @@ export default function DataFetchingDemo({ apiUrl = 'http://localhost:3001/api' 
                 <h4 className="font-semibold mb-2">Sales History (Last 30 Days)</h4>
                 <div className="bg-white rounded border p-4">
                   <div className="h-32 flex items-end justify-between space-x-1">
-                    {gameData.salesHistory.slice(-10).map((point, index) => {
-                      const maxOwners = Math.max(...gameData.salesHistory.map(p => p.owners));
+                    {gameData.salesHistory.slice(-10).map((point: { date: string; owners: number; price: number }, index: number) => {
+                      const maxOwners = Math.max(...gameData.salesHistory!.map((p: { date: string; owners: number; price: number }) => p.owners));
                       const height = (point.owners / maxOwners) * 100;
                       return (
                         <div key={index} className="flex-1 flex flex-col items-center">

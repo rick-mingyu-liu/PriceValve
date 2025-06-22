@@ -38,13 +38,12 @@ export const gameController = {
       // Create comprehensive analysis
       let priceAnalysis = null;
       if (steamData.status === 'fulfilled' && steamData.value && 
-          steamSpyData.status === 'fulfilled' && steamSpyData.value &&
-          itadData.status === 'fulfilled' && itadData.value) {
+          steamSpyData.status === 'fulfilled' && steamSpyData.value) {
         
         priceAnalysis = await createComprehensiveAnalysis(
           steamData.value,
           steamSpyData.value,
-          itadData.value
+          itadData.status === 'fulfilled' ? itadData.value : null
         );
       }
 
@@ -108,13 +107,12 @@ export const gameController = {
 
           let priceAnalysis = null;
           if (steamData.status === 'fulfilled' && steamData.value && 
-              steamSpyData.status === 'fulfilled' && steamSpyData.value &&
-              itadData.status === 'fulfilled' && itadData.value) {
+              steamSpyData.status === 'fulfilled' && steamSpyData.value) {
             
             priceAnalysis = await createComprehensiveAnalysis(
               steamData.value,
               steamSpyData.value,
-              itadData.value
+              itadData.status === 'fulfilled' ? itadData.value : null
             );
           }
 

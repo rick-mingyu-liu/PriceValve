@@ -45,7 +45,8 @@ function Button({
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
   }) {
-  const Comp = asChild ? Slot : "button"
+  // @ts-expect-error
+  const Comp: React.ElementType = asChild ? Slot : "button"
 
   return (
     <Comp
@@ -53,7 +54,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  )
+  ) as React.ReactElement
 }
 
 export { Button, buttonVariants }

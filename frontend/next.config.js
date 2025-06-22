@@ -23,7 +23,24 @@ const nextConfig = {
     ]
   },
   images: {
-    domains: ['cdn.akamai.steamstatic.com', 'media.steampowered.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.akamai.steamstatic.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'store.akamai.steamstatic.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.steampowered.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'shared.akamai.steamstatic.com',
+      },
+    ],
   },
 }
 

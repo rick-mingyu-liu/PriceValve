@@ -50,7 +50,7 @@ NODE_ENV=development
 # Steam API (optional but recommended)
 # Get your key from: https://steamcommunity.com/dev/apikey
 STEAM_API_KEY=
-
+ITAD_API_KEY=a59414cc337e298d6bc443ad633ec49790592e69
 # Frontend URL (for CORS)
 FRONTEND_URL=http://localhost:3000
 EOF
