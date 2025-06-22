@@ -1,4 +1,6 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = typeof window !== 'undefined' && window.NEXT_PUBLIC_API_URL
+  ? window.NEXT_PUBLIC_API_URL
+  : 'http://localhost:3001/api';
 
 export interface SteamGame {
   appid: number;
@@ -105,12 +107,8 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -119,54 +117,72 @@ class ApiClient {
       ...options,
     };
 
-    try {
-      const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('API request failed:', error);
-      throw error;
+    const response = await fetch(url, config);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
+
+    return await response.json();
   }
 
-  // Game Analysis API methods
+  // Analyze a game (core functionality)
   async analyzeGame(appId: number): Promise<GameAnalysisResponse> {
     return this.request<GameAnalysisResponse>(`/api/analyze/${appId}`);
   }
 
-  // Steam API methods (legacy)
-  async getGameDetails(appId: number): Promise<SteamGame> {
-    return this.request<SteamGame>(`/steam/game/${appId}`);
+  // Get full game data by ID
+  async getGameData(appId: number): Promise<SteamGame> {
+    return this.request<SteamGame>(`/api/games/${appId}`);
   }
 
-  async getUserProfile(steamId: string): Promise<SteamUserProfile> {
-    return this.request<SteamUserProfile>(`/steam/user/${steamId}`);
-  }
-
-  async getGamePrice(appId: number): Promise<SteamPriceData> {
-    return this.request<SteamPriceData>(`/steam/price/${appId}`);
-  }
-
+  // Batch fetch games
   async getMultipleGames(appIds: number[]): Promise<SteamGame[]> {
-    return this.request<SteamGame[]>('/steam/games', {
+    return this.request<SteamGame[]>('/api/games/batch', {
       method: 'POST',
       body: JSON.stringify({ appIds }),
     });
   }
 
+  // Search games
   async searchGames(query: string): Promise<SteamGame[]> {
-    return this.request<SteamGame[]>(`/steam/search?q=${encodeURIComponent(query)}`);
+    return this.request<SteamGame[]>(`/api/games/search?q=${encodeURIComponent(query)}`);
+  }
+
+  // Trending, top, best-value
+  async getTrendingGames(): Promise<SteamGame[]> {
+    return this.request<SteamGame[]>('/api/games/trending');
+  }
+
+  async getTopGames(): Promise<SteamGame[]> {
+    return this.request<SteamGame[]>('/api/games/top');
+  }
+
+  async getBestValueGames(): Promise<SteamGame[]> {
+    return this.request<SteamGame[]>('/api/games/best-value');
   }
 
   // Health check
   async healthCheck(): Promise<{ status: string; timestamp: string; message: string; version: string; environment: string }> {
-    return this.request<{ status: string; timestamp: string; message: string; version: string; environment: string }>('/api/health');
+    return this.request('/api/health');
+  }
+
+  // System info (optional if using a dashboard)
+  async getCacheStats(): Promise<any> {
+    return this.request('/api/system/cache/stats');
+  }
+
+  async clearCache(): Promise<any> {
+    return this.request('/api/system/cache', { method: 'DELETE' });
+  }
+
+  async getDataSourcesStatus(): Promise<any> {
+    return this.request('/api/system/status');
+  }
+
+  async getDatabaseStats(): Promise<any> {
+    return this.request('/api/system/db/stats');
   }
 }
 
-export const apiClient = new ApiClient(API_BASE_URL); 
+export const apiClient = new ApiClient(API_URL); 

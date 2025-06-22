@@ -1,7 +1,26 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Game } from '../../../data-models/types/game';
+import React, { useState, useEffect, useCallback } from 'react';
+
+// Define Game interface locally since the import path doesn't exist
+interface Game {
+  appId: number;
+  name: string;
+  price: number;
+  discountPercent?: number;
+  isFree: boolean;
+  releaseDate?: string;
+  developer?: string;
+  publisher?: string;
+  owners?: string;
+  averagePlaytime?: number;
+  reviewScore?: number;
+  totalReviews?: number;
+  shortDescription?: string;
+  tags?: string[];
+  salesHistory: Array<{ owners: number; date: string }>;
+  [key: string]: unknown; // For any additional fields
+}
 
 interface DataFetchingDemoProps {
   apiUrl?: string;
@@ -15,7 +34,7 @@ export default function DataFetchingDemo({ apiUrl = 'http://localhost:3001/api' 
   const [includeReviews, setIncludeReviews] = useState(true);
   const [includePlayerCount, setIncludePlayerCount] = useState(true);
   const [includeSalesHistory, setIncludeSalesHistory] = useState(true);
-  const [cacheStats, setCacheStats] = useState<any>(null);
+  const [cacheStats, setCacheStats] = useState<unknown>(null);
 
   const fetchGameData = async () => {
     setLoading(true);
@@ -43,7 +62,7 @@ export default function DataFetchingDemo({ apiUrl = 'http://localhost:3001/api' 
     }
   };
 
-  const fetchCacheStats = async () => {
+  const fetchCacheStats = useCallback(async () => {
     try {
       const response = await fetch(`${apiUrl}/data/cache/stats`);
       const result = await response.json();
@@ -54,7 +73,7 @@ export default function DataFetchingDemo({ apiUrl = 'http://localhost:3001/api' 
     } catch (err) {
       console.error('Failed to fetch cache stats:', err);
     }
-  };
+  }, [apiUrl]);
 
   const clearCache = async () => {
     try {
@@ -65,14 +84,14 @@ export default function DataFetchingDemo({ apiUrl = 'http://localhost:3001/api' 
         alert('Cache cleared successfully!');
         fetchCacheStats();
       }
-    } catch (err) {
+    } catch {
       alert('Failed to clear cache');
     }
   };
 
   useEffect(() => {
     fetchCacheStats();
-  }, []);
+  }, [fetchCacheStats]);
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">

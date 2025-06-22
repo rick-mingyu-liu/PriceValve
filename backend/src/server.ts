@@ -1,20 +1,20 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import { steamRoutes } from './routes/steam';
+import apiRoutes from './routes/apiRoutes';
 import { errorHandler } from './middleware/errorHandler';
-import gameRoutes from './routes/gameRoutes';
-import dataRoutes from './routes/dataRoutes';
-import { connectDatabase } from './config/database';
+import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 5000;
+// Debug: Check if environment variables are loaded
+console.log('🔧 Environment variables loaded:');
+console.log('   PORT:', process.env.PORT);
+console.log('   STEAM_API_KEY:', process.env.STEAM_API_KEY ? '✅ Found' : '❌ Not found');
+console.log('');
 
-// Connect to MongoDB
-connectDatabase().catch(console.error);
+const app = express();
+const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors({
@@ -24,46 +24,48 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Basic health check route at /api/health
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    message: 'PriceValve API is running',
-    version: '1.0.0',
-    environment: process.env.NODE_ENV || 'development'
+// Request logging middleware
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  const method = req.method;
+  const url = req.url;
+  const userAgent = req.get('User-Agent') || 'Unknown';
+  
+  console.log(`📊 ${timestamp} - ${method} ${url} - ${userAgent}`);
+  next();
+});
+
+// Main API routes
+app.use('/api', apiRoutes);
+
+// Error handler
+app.use(errorHandler);
+
+// 404 fallback route
+app.use((req, res) => {
+  console.log(`❌ 404 - Route not found: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({ 
+    success: false,
+    error: 'Route not found',
+    message: 'Check the API documentation for available endpoints',
+    path: req.originalUrl,
+    method: req.method
   });
 });
 
-// API routes
-app.use('/api/steam', steamRoutes);
-app.use('/api', gameRoutes);
-app.use('/api/data', dataRoutes);
-
-// Error handling middleware
-app.use(errorHandler);
-
-// 404 handler - use a proper path instead of wildcard
-app.use('/', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
-
+// Start server
 app.listen(PORT, () => {
-  console.log(`🚀 PriceValve server running on port ${PORT}`);
+  console.log(`🚀 PriceValve API running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`🎮 Game analysis: http://localhost:${PORT}/api/analyze/:appId`);
-  console.log(`📈 Data fetching: http://localhost:${PORT}/api/data/game/:appId`);
-  console.log(`📈 Database stats: http://localhost:${PORT}/api/stats`);
+  console.log(`📈 Main endpoint: http://localhost:${PORT}/api/fetch`);
+  console.log(`🗑️  Clear cache: http://localhost:${PORT}/api/cache`);
   console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
-  
-  // Check for required environment variables
-  if (!process.env.STEAM_API_KEY) {
-    console.warn('⚠️  STEAM_API_KEY not found - Steam API features may be limited');
-  }
-  
-  if (!process.env.MONGODB_URI) {
-    console.warn('⚠️  MONGODB_URI not found - using default local MongoDB');
-  }
+  console.log('');
+  console.log('📋 Available endpoints:');
+  console.log('   POST /api/fetch - Fetch game data (single, multiple, trending, search)');
+  console.log('   GET  /api/health - Health check and system status');
+  console.log('   DELETE /api/cache - Clear cache');
+  console.log('');
 });
 
-export default app; 
+export default app;

@@ -1,0 +1,175 @@
+{
+  "info": {
+    "name": "PriceValve API",
+    "description": "Simple API for fetching Steam game data",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/api/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["api", "health"]
+        }
+      }
+    },
+    {
+      "name": "Fetch Single Game",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"single\",\n  \"appId\": 730,\n  \"includeReviews\": true,\n  \"includeSalesHistory\": true,\n  \"uploadToDb\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/fetch",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["api", "fetch"]
+        }
+      }
+    },
+    {
+      "name": "Fetch Multiple Games",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"multiple\",\n  \"appIds\": [730, 570, 440],\n  \"includeReviews\": true,\n  \"includeSalesHistory\": true,\n  \"uploadToDb\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/fetch",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["api", "fetch"]
+        }
+      }
+    },
+    {
+      "name": "Fetch Trending Games",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"trending\",\n  \"limit\": 10,\n  \"includeReviews\": true,\n  \"uploadToDb\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/fetch",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["api", "fetch"]
+        }
+      }
+    },
+    {
+      "name": "Search Games",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"search\",\n  \"query\": \"counter-strike\",\n  \"limit\": 5,\n  \"includeReviews\": true,\n  \"uploadToDb\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/fetch",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["api", "fetch"]
+        }
+      }
+    },
+    {
+      "name": "Fetch Games by Genre",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"genre\",\n  \"query\": \"Action\",\n  \"limit\": 10,\n  \"includeReviews\": true,\n  \"uploadToDb\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/fetch",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["api", "fetch"]
+        }
+      }
+    },
+    {
+      "name": "Fetch Games by Tag",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"tag\",\n  \"query\": \"Multiplayer\",\n  \"limit\": 10,\n  \"includeReviews\": true,\n  \"uploadToDb\": true\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5001/api/fetch",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["api", "fetch"]
+        }
+      }
+    },
+    {
+      "name": "Clear Cache",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/api/cache",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["api", "cache"]
+        }
+      }
+    }
+  ]
+} 

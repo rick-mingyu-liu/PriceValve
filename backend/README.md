@@ -1,6 +1,6 @@
 # PriceValve Backend API
 
-A comprehensive Express.js backend for Steam game pricing optimization with full Steam Web API integration.
+A comprehensive Express.js backend for Steam game data analysis using SteamSpy and Steam Review APIs. This is a pure data fetching service with no database operations.
 
 ## 🚀 Quick Start
 
@@ -10,7 +10,7 @@ npm install
 
 # Set up environment variables
 cp env.example .env
-# Edit .env with your Steam API key
+# Edit .env with your configuration
 
 # Start development server
 npm run dev
@@ -32,67 +32,24 @@ NODE_ENV=development
 # Frontend URL (for CORS)
 FRONTEND_URL=http://localhost:3000
 
-# Steam Web API (Required for user games endpoint)
-STEAM_API_KEY=your_steam_api_key_here
-
-# Database Configuration (if using MongoDB)
-MONGODB_URI=mongodb://localhost:27017/pricevalve
-
-# Redis Configuration (if using Redis)
+# Redis Configuration (optional, for caching)
 REDIS_URL=redis://localhost:6379
-
-# JWT Secret (for authentication)
-JWT_SECRET=your_jwt_secret_here
 
 # Optional: Logging
 LOG_LEVEL=info
 ```
 
-## 🎮 Steam Web API Integration
+## 🎮 API Integration
 
-### Getting a Steam API Key
+### SteamSpy API
+- **No API key required** - Public API
+- Provides game statistics, ownership data, and sales history
+- Rate limited to reasonable usage
 
-1. Visit [Steam Community](https://steamcommunity.com/dev/apikey)
-2. Sign in with your Steam account
-3. Accept the terms and generate an API key
-4. Add the key to your `.env` file
-
-### Steam API Service Features
-
-The `SteamApiService` class provides:
-
-- **Rate Limiting**: Automatic rate limiting to respect Steam API limits
-- **Error Handling**: Comprehensive error handling with retry logic
-- **Type Safety**: Full TypeScript support with detailed interfaces
-- **Multiple Endpoints**: Support for Store API and Community API
-
-### Available Steam API Methods
-
-```typescript
-// Get detailed app information
-await steamApiService.getAppDetails(appId: number)
-
-// Get current player count
-await steamApiService.getPlayerCount(appId: number)
-
-// Get review summary
-await steamApiService.getReviewSummary(appId: number)
-
-// Get user's owned games (requires API key)
-await steamApiService.getUserGames(steamId: string, includeAppInfo?: boolean)
-
-// Get list of all Steam apps
-await steamApiService.getAppList()
-
-// Find similar games
-await steamApiService.findSimilarGames(appId: number, limit?: number)
-
-// Get rate limit information
-steamApiService.getRateLimitInfo()
-
-// Check if API key is configured
-steamApiService.isApiKeyConfigured()
-```
+### Steam Review API
+- **No API key required** - Public API  
+- Provides review scores and sentiment analysis
+- Rate limited to reasonable usage
 
 ## 📡 API Endpoints
 
@@ -101,48 +58,73 @@ steamApiService.isApiKeyConfigured()
 GET /api/health
 ```
 
-### Steam Game Details
+### Fetch Game Data
 ```http
-GET /api/steam/app/:appId
+POST /api/fetch
 ```
-Get comprehensive game information including price, reviews, categories, etc.
 
-### User's Games
-```http
-GET /api/steam/games/:steamId?includeAppInfo=true
+**Request Body Examples:**
+
+**Single Game:**
+```json
+{
+  "type": "single",
+  "appId": 730,
+  "includeReviews": true
+}
 ```
-Get user's owned games (requires Steam API key)
 
-### Competitor Analysis
-```http
-GET /api/steam/competitors/:appId?limit=10
+**Multiple Games:**
+```json
+{
+  "type": "multiple",
+  "appIds": [730, 570, 440],
+  "includeReviews": true
+}
 ```
-Find similar/competitor games based on categories and genres
 
-### Player Statistics
-```http
-GET /api/steam/players/:appId
+**Trending Games:**
+```json
+{
+  "type": "trending",
+  "limit": 10,
+  "includeReviews": true
+}
 ```
-Get current player count for a game
 
-### Review Data
-```http
-GET /api/steam/reviews/:appId
+**Search Games:**
+```json
+{
+  "type": "search",
+  "query": "counter-strike",
+  "limit": 5,
+  "includeReviews": true
+}
 ```
-Get review summary and scores
 
-### Rate Limit Information
-```http
-GET /api/steam/rate-limits
+**Games by Genre:**
+```json
+{
+  "type": "genre",
+  "genre": "Action",
+  "limit": 10,
+  "includeReviews": true
+}
 ```
-Get current rate limit status for Steam APIs
 
-### Legacy Endpoints (Backward Compatibility)
+**Games by Tag:**
+```json
+{
+  "type": "tag",
+  "tag": "Multiplayer",
+  "limit": 10,
+  "includeReviews": true
+}
+```
 
+### Clear Cache
 ```http
-GET /api/steam/game/:appId      # Basic game details
-GET /api/steam/user/:steamId    # User profile
-GET /api/steam/price/:appId     # Price data only
+DELETE /api/cache
 ```
 
 ## 🏗️ Project Structure
@@ -152,31 +134,28 @@ backend/
 ├── src/
 │   ├── server.ts              # Main Express server
 │   ├── routes/
-│   │   └── steam.ts           # Steam API routes
+│   │   └── apiRoutes.ts       # Main API routes
+│   ├── controllers/
+│   │   └── apiController.ts   # API controller logic
 │   ├── services/
-│   │   ├── steamApi.ts        # Comprehensive Steam API service
-│   │   └── steamService.ts    # Legacy Steam service
+│   │   ├── dataFetchingService.ts    # Core data fetching logic
+│   │   ├── gameDataService.ts        # Game data service
+│   │   ├── steamSpyApi.ts            # SteamSpy API integration
+│   │   ├── steamReviewApi.ts         # Steam Review API integration
+│   │   └── gameService.ts            # Game data operations
 │   ├── middleware/
-│   │   └── errorHandler.ts    # Error handling middleware
+│   │   └── errorHandler.ts           # Error handling middleware
 │   ├── types/
-│   │   ├── index.ts           # Main type exports
-│   │   └── steam.ts           # Steam API types
+│   │   ├── index.ts                  # Main type exports
+│   │   ├── game.ts                   # Game data types
+│   │   └── steamSpy.ts               # SteamSpy API types
 │   └── utils/
-│       └── helpers.ts         # Utility functions
-├── env.example                # Environment variables template
-├── package.json               # Dependencies and scripts
-└── tsconfig.json             # TypeScript configuration
+│       └── helpers.ts                # Utility functions
+├── PriceValve-API.postman_collection.json  # Postman collection
+├── API-README.md                          # Detailed API documentation
+├── package.json                           # Dependencies and scripts
+└── tsconfig.json                         # TypeScript configuration
 ```
-
-## 🔄 Rate Limiting
-
-The Steam API service includes automatic rate limiting:
-
-- **Store API**: 100 requests per minute
-- **Community API**: 100 requests per minute
-- **Player Count API**: 50 requests per minute
-
-Rate limits are tracked automatically and requests are queued when limits are reached.
 
 ## 📊 Response Format
 
@@ -188,99 +167,102 @@ interface ApiResponse<T> {
   data?: T;
   error?: string;
   message?: string;
+  timestamp?: string;
 }
 ```
 
-### Success Response
+### Success Response Example
 ```json
 {
   "success": true,
   "data": {
-    // Response data here
-  }
+    "appId": 730,
+    "name": "Counter-Strike: Global Offensive",
+    "isFree": false,
+    "price": "0",
+    "tags": ["FPS", "Shooter", "Multiplayer"],
+    "salesHistory": [...],
+    "developer": "Valve",
+    "publisher": "Valve",
+    "reviewScore": 88,
+    "reviewScoreDesc": "Very Positive",
+    "owners": "50,000,000 .. 100,000,000",
+    "averagePlaytime": 120
+  },
+  "message": "Game data fetched successfully",
+  "timestamp": "2024-01-15T10:30:00.000Z"
 }
 ```
 
-### Error Response
+### Error Response Example
 ```json
 {
   "success": false,
-  "error": "Error message here"
+  "error": "Game not found",
+  "message": "Failed to fetch game data",
+  "timestamp": "2024-01-15T10:30:00.000Z"
 }
 ```
 
-## 🛠️ Development
+## 🔄 Fetch Options
 
-### Scripts
+The `options` parameter in fetch requests supports:
 
-```bash
-npm run dev          # Start development server with nodemon
-npm run build        # Build TypeScript to JavaScript
-npm run start        # Start production server
-npm test             # Run tests (if configured)
+```typescript
+interface FetchOptions {
+  includeReviews?: boolean;      // Include Steam review data
+  includeSalesHistory?: boolean; // Include sales history data
+}
 ```
 
-### Adding New Steam API Endpoints
+## 📈 Data Sources
 
-1. Add the method to `SteamApiService` in `src/services/steamApi.ts`
-2. Add corresponding types in `src/types/steam.ts`
-3. Add the route in `src/routes/steam.ts`
-4. Update this README with the new endpoint
+### SteamSpy Data
+- Game metadata (name, developer, publisher)
+- Ownership statistics
+- Price information
+- Tags and genres
+- Sales history (if available)
 
-### Error Handling
+### Steam Review Data
+- Review scores (0-100)
+- Review categories (Overwhelmingly Positive, Very Positive, etc.)
+- Sentiment analysis
 
-The service includes comprehensive error handling:
+## 🚀 Performance Features
 
-- Network timeouts (10 seconds)
-- Rate limit detection and handling
-- Invalid API key detection
-- Malformed response handling
+- **Caching**: Redis-based caching for API responses
+- **Rate Limiting**: Built-in delays between API calls
+- **Batch Processing**: Efficient handling of multiple games
+- **Error Handling**: Graceful handling of API failures
 
-## 🔗 Steam Web API Documentation
+## 🧪 Testing
 
-- [Steam Store API](https://store.steampowered.com/api/)
-- [Steam Community API](https://api.steampowered.com/)
-- [Steam Web API Wiki](https://developer.valvesoftware.com/wiki/Steam_Web_API)
-- [Rate Limiting](https://developer.valvesoftware.com/wiki/Steam_Web_API#Rate_Limiting)
+Test the API using the provided Postman collection:
 
-## 🚀 Deployment
+1. Import `PriceValve-API.postman_collection.json`
+2. Set the base URL to `http://localhost:5001`
+3. Try different fetch types and parameters
 
-### Production Build
+## 🔧 Development
 
 ```bash
+# Install dependencies
+npm install
+
+# Start development server with hot reload
+npm run dev
+
+# Build TypeScript
 npm run build
+
+# Start production server
 npm start
 ```
 
-### Environment Variables for Production
+## 📝 Notes
 
-Make sure to set all required environment variables in your production environment:
-
-- `STEAM_API_KEY` (required for user games endpoint)
-- `PORT` (default: 5001)
-- `NODE_ENV=production`
-- `FRONTEND_URL` (your frontend URL for CORS)
-
-### Docker (Optional)
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY dist ./dist
-EXPOSE 5001
-CMD ["node", "dist/server.js"]
-```
-
-## 🤝 Contributing
-
-1. Follow the existing code structure
-2. Add proper TypeScript types for new features
-3. Include error handling for all API calls
-4. Update this README for new endpoints
-5. Test with the Steam Web API
-
-## 📄 License
-
-This project is licensed under the ISC License. 
+- This is a pure data fetching service with no database operations
+- All data is fetched in real-time from external APIs
+- Caching is used to improve performance and reduce API calls
+- The service is designed to be stateless and scalable 
