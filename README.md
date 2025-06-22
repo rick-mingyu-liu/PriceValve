@@ -289,4 +289,4 @@ npm start
 5. Submit a pull request
 
 
-**Built with ❤️ for Spurhacks and the Steam gaming community**
+**Built with ❤️ for SpurHacks and the Steam gaming community**
