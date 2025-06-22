@@ -1,19 +1,20 @@
 # 🎮 PriceValve: AI-Powered Steam Game Pricing Intelligence
 
-> **Real-time Steam game analysis with machine learning-driven pricing recommendations**
+> **Real-time Steam game analysis with revenue optimization-driven pricing recommendations**
 
 ## 🎯 Project Overview
 
-PriceWave is an intelligent pricing platform that analyzes Steam games in real-time and provides AI-powered pricing recommendations. The system combines data from Steam APIs, sentiment analysis, and machine learning models to help developers optimize their game pricing strategy.
+PriceWave is an intelligent pricing platform that analyzes Steam games in real-time and provides AI-powered pricing recommendations. The system combines data from Steam APIs, sentiment analysis, and revenue optimization models to help developers optimize their game pricing strategy.
 
 ### Key Features
 
 - **🔍 Real-time Steam Data Analysis**: Fetch and analyze game data from Steam Web API and SteamSpy
-- **🧠 ML-Powered Pricing**: Machine learning models for price prediction and optimization
+- **💰 Revenue Optimization Models**: Advanced algorithms for price prediction and optimization
 - **📊 Sentiment Analysis**: Review sentiment analysis for market perception
-- **📈 Time Series Forecasting**: ARIMA and regression models for trend prediction
+- **📈 Price Elasticity Derivation**: Mathematical models for demand-price relationships
 - **🎯 Price Recommendations**: AI-generated pricing suggestions with confidence scores
 - **📱 Modern Web Interface**: Beautiful React/Next.js frontend with real-time updates
+- **🏆 Competitor Comparison**: Comprehensive analysis of similar games and market positioning
 
 ## 🏗️ Project Architecture
 
@@ -38,11 +39,11 @@ PriceValve/
 │   │   └── 📁 utils/              # API client & utilities
 │   ├── package.json
 │   └── env.example
-├── 📁 ml/                         # Machine Learning Models
-│   ├── 📁 models/                 # Trained ML models
+├── 📁 revenue-optimization/       # Revenue Optimization Models
+│   ├── 📁 models/                 # Trained optimization models
 │   ├── 📁 notebooks/              # Jupyter notebooks
 │   ├── 📁 data/                   # Training datasets
-│   ├── 📁 scripts/                # ML training scripts
+│   ├── 📁 scripts/                # Optimization training scripts
 │   └── requirements.txt
 ├── 📁 data-models/                # Data Model Definitions
 │   ├── 📁 schemas/                # Database schemas
@@ -58,7 +59,7 @@ PriceValve/
 ### Prerequisites
 
 - **Node.js 18+**
-- **Python 3.8+** (for ML models)
+- **Python 3.8+** (for revenue optimization models)
 - **MongoDB** (for data storage)
 - **Steam Web API Key** (optional, for enhanced features)
 
@@ -81,8 +82,8 @@ PriceValve/
    # Install frontend dependencies
    cd ../frontend && npm install
    
-   # Install ML dependencies
-   cd ../ml && pip install -r requirements.txt
+   # Install revenue optimization dependencies
+   cd ../revenue-optimization && pip install -r requirements.txt
    ```
 
 3. **Set up environment variables**
@@ -135,8 +136,8 @@ interface Game {
   marketAnalysis: MarketAnalysis;
   reviewAnalysis: ReviewAnalysis;
   
-  // ML Predictions
-  mlPredictions: MLPredictions;
+  // Revenue Optimization Predictions
+  revenuePredictions: RevenuePredictions;
   
   // Metadata
   tags: GameTag[];
@@ -145,10 +146,10 @@ interface Game {
 }
 ```
 
-### ML Prediction Model
+### Revenue Optimization Prediction Model
 
 ```typescript
-interface MLPredictions {
+interface RevenuePredictions {
   priceForecast: {
     nextWeek: number;
     nextMonth: number;
@@ -169,35 +170,40 @@ interface MLPredictions {
     score: number;
     competitors: string[];
   };
+  priceElasticity: {
+    value: number;
+    interpretation: string;
+    similarGames: number;
+  };
 }
 ```
 
-## 🤖 Machine Learning Models
+## 💰 Revenue Optimization Models
 
 ### Current Models
 
-1. **Price Forecasting (ARIMA)**
-   - Time series analysis for price trends
-   - Seasonal decomposition
-   - Confidence intervals
+1. **Price Elasticity Derivation**
+   - Mathematical analysis of demand-price relationships
+   - Competitor price comparison
+   - Revenue optimization algorithms
 
 2. **Sentiment Analysis**
    - Review sentiment classification
    - Trend detection
    - Price-sentiment correlation
 
-3. **Price Optimization (Linear Regression)**
-   - Price elasticity modeling
-   - Revenue optimization
-   - Market positioning
+3. **Competitor Comparison**
+   - Market positioning analysis
+   - Similar game identification
+   - Pricing strategy recommendations
 
 ### Model Training
 
 ```bash
-cd ml
-python scripts/train_price_model.py
+cd revenue-optimization
+python scripts/train_price_elasticity.py
 python scripts/train_sentiment_model.py
-python scripts/train_optimization_model.py
+python scripts/train_competitor_analysis.py
 ```
 
 ## 🔌 API Endpoints
@@ -207,10 +213,10 @@ python scripts/train_optimization_model.py
 - `POST /api/games/analyze` - Analyze multiple games
 - `GET /api/games/search` - Search games
 
-### ML Predictions
-- `GET /api/ml/predict/:appId` - Get ML predictions
-- `POST /api/ml/train` - Retrain models
-- `GET /api/ml/status` - Model status
+### Revenue Optimization Predictions
+- `GET /api/revenue/predict/:appId` - Get revenue optimization predictions
+- `POST /api/revenue/train` - Retrain models
+- `GET /api/revenue/status` - Model status
 
 ### Steam Integration
 - `GET /api/steam/game/:appId` - Steam game data
@@ -224,7 +230,8 @@ Built with **shadcn/ui** and **Tailwind CSS**:
 - `GameCard` - Game information display
 - `PriceChart` - Interactive price charts
 - `SentimentWidget` - Sentiment analysis display
-- `MLPredictions` - ML prediction results
+- `RevenuePredictions` - Revenue optimization prediction results
+- `CompetitorComparison` - Competitor analysis display
 - `SearchBar` - Game search functionality
 
 ## 📈 Data Sources
@@ -241,10 +248,10 @@ Built with **shadcn/ui** and **Tailwind CSS**:
 - Market positioning
 - Genre analysis
 
-### Internal ML Models
-- Price forecasting
+### Internal Revenue Optimization Models
+- Price elasticity calculations
 - Sentiment analysis
-- Optimization recommendations
+- Competitor comparison algorithms
 
 ## 🔧 Development
 
@@ -264,11 +271,11 @@ npm run build        # Build for production
 npm run lint         # Run linter
 ```
 
-### ML Development
+### Revenue Optimization Development
 ```bash
-cd ml
+cd revenue-optimization
 jupyter notebook     # Start Jupyter
-python scripts/      # Run ML scripts
+python scripts/      # Run optimization scripts
 ```
 
 ## 🚀 Deployment
@@ -287,16 +294,16 @@ npm run build
 npm start
 ```
 
-### ML Model Deployment
+### Revenue Optimization Model Deployment
 ```bash
-cd ml
+cd revenue-optimization
 python scripts/deploy_models.py
 ```
 
 ## 📚 Documentation
 
 - [API Documentation](./docs/api.md)
-- [ML Model Documentation](./docs/ml-models.md)
+- [Revenue Optimization Model Documentation](./docs/revenue-models.md)
 - [Database Schema](./docs/database.md)
 - [Deployment Guide](./docs/deployment.md)
 
