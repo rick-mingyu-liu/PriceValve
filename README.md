@@ -1,4 +1,4 @@
-# 🎮 PriceValve: AI-Powered Steam Game Pricing Intelligence
+# 🎮 PriceValve: Steam Game Revenue Maximization Interface
 
 > **Real-time Steam game analysis with revenue optimization-driven pricing recommendations**
 
