@@ -2,329 +2,637 @@
 
 ## Overview
 
-PriceValve API is a comprehensive game data service that fetches information from SteamSpy and Steam Review APIs, processes the data, and stores it in MongoDB for analysis and optimization purposes.
+The PriceValve API provides comprehensive game analysis by integrating data from multiple sources:
 
-## Architecture
+- **Steam Web API**: Game details, pricing, and metadata
+- **SteamSpy API**: Market data, ownership statistics, and player metrics
+- **IsThereAnyDeal API**: Price history, deals, and cross-store pricing
+- **Price Optimizer**: Mathematical models for price prediction and optimization
 
-The API now uses two main data sources:
-- **SteamSpy API**: Provides ownership data, playtime statistics, pricing information, and game metadata
-- **Steam Review API**: Provides review scores, ratings, and user feedback
+## Setup
 
-## Data Model
+1. Install dependencies:
 
-### Game Object Structure
+```bash
+npm install
+```
 
-```typescript
-interface Game {
-  appId: number;                    // Steam Application ID
-  name: string;                     // Game name
-  isFree: boolean;                  // Whether the game is free
-  price: number;                    // Current price in USD
-  discountPercent?: number;         // Current discount percentage
-  releaseDate?: string;             // Release date
-  developer?: string;               // Developer name
-  publisher?: string;               // Publisher name
-  tags: string[];                   // Game tags/genres
+2. Copy environment file and configure API keys:
 
-  // SteamSpy Data
-  owners?: string;                  // Ownership range (e.g., "1,000,000 .. 2,000,000")
-  averagePlaytime?: number;         // Average playtime in minutes
+```bash
+cp env.example .env
+```
 
-  // Steam Review Data
-  reviewScore?: number;             // Review score (1-100)
-  reviewScoreDesc?: string;         // Review description (e.g., "Very Positive")
-  totalReviews?: number;            // Total number of reviews
-  totalPositive?: number;           // Number of positive reviews
-  totalNegative?: number;           // Number of negative reviews
+3. Get your IsThereAnyDeal API key from: https://isthereanydeal.com/apps/
 
-  // Sales History
-  salesHistory: SalesDataPoint[];   // Historical sales data
-}
+4. Start the server:
 
-interface SalesDataPoint {
-  date: string;                     // ISO date
-  owners: number;                   // Estimated owners
-  revenue?: number;                 // Estimated revenue
-  volumeChange?: number;            // Change in ownership
-}
+```bash
+npm run dev
 ```
 
 ## API Endpoints
 
-### Main Data Fetching Endpoint
+### Base URL
 
-**POST** `/api/fetch`
+```
+http://localhost:5001/api
+```
 
-This is the main endpoint that handles all data fetching operations. It can fetch single games, multiple games, trending games, search results, and more.
+### Health Check
 
-#### Request Body
+**GET** `/health`
+
+Check if the API is running.
+
+**Response:**
 
 ```json
 {
-  "type": "single|multiple|trending|search|genre|tag",
-  "appId": 730,                    // Required for single game
-  "appIds": [730, 570, 440],       // Required for multiple games
-  "query": "Counter-Strike",       // Required for search/genre/tag
-  "includeReviews": true,          // Include review data
-  "includeSalesHistory": true,     // Include sales history
-  "uploadToDb": true,              // Upload to MongoDB
-  "limit": 20                      // Limit results
+  "success": true,
+  "message": "PriceValve API is running",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "version": "1.0.0"
 }
 ```
 
-#### Response Format
+### Game Analysis
+
+#### Single Game Analysis
+
+**POST** `/analyze`
+
+Analyze a single game with comprehensive data from all APIs.
+
+**Request Body:**
+
+```json
+{
+  "appId": 730
+}
+```
+
+**Response:**
 
 ```json
 {
   "success": true,
   "data": {
+    "appId": 730,
     "name": "Counter-Strike 2",
-    "appId": 730,
-    "price": 0,
-    "isFree": true,
-    "reviewScore": 85,
-    "reviewScoreDesc": "Very Positive",
-    "owners": "50,000,000 .. 100,000,000",
-    "averagePlaytime": 1200,
-    "tags": ["FPS", "Multiplayer", "Action"],
-    "salesHistory": [...]
-  },
-  "gameId": "mongodb_id_here",
-  "isNew": false,
-  "sources": {
-    "steamSpy": true,
-    "steamReview": true
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "message": "Game data fetched and uploaded successfully"
-}
-```
-
-### Health Check
-
-**GET** `/api/health`
-
-Returns the health status of all services.
-
-#### Response
-
-```json
-{
-  "success": true,
-  "status": "healthy",
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "services": {
-    "dataFetching": true,
-    "mongoUpload": true,
-    "steamSpy": true,
-    "steamReview": true
-  },
-  "stats": {
-    "uploadStats": {
-      "totalGames": 1500,
-      "activeGames": 1450,
-      "lastUpload": "2024-01-15T10:25:00.000Z",
-      "averageAnalysisCount": 3.2
+    "steamData": {
+      /* Steam game details */
     },
-    "cacheStats": {
-      "size": 50,
-      "entries": [...]
-    }
-  },
-  "message": "All services are operational"
+    "steamSpyData": {
+      /* SteamSpy market data */
+    },
+    "itadData": {
+      /* Price history and deals */
+    },
+    "priceAnalysis": {
+      "currentPrice": 1999,
+      "recommendedPrice": 1799,
+      "priceConfidence": 75,
+      "demandScore": 65,
+      "competitionScore": 70,
+      "marketTrend": "neutral",
+      "priceHistory": {
+        "lowestPrice": 999,
+        "highestPrice": 2999,
+        "averagePrice": 1999,
+        "priceVolatility": 500,
+        "priceTrend": "stable"
+      },
+      "factors": {
+        "popularity": 0.6,
+        "reviewScore": 0.75,
+        "age": 0.8,
+        "genreCompetition": 0.7,
+        "seasonalDemand": 1.0,
+        "priceElasticity": -0.8
+      },
+      "recommendations": [
+        "Consider lowering price - demand appears elastic",
+        "Monitor competitor pricing in the same genre"
+      ]
+    },
+    "timestamp": "2024-01-01T00:00:00.000Z",
+    "success": true
+  }
 }
 ```
 
-### Clear Cache
+#### Batch Game Analysis
 
-**DELETE** `/api/cache`
+**POST** `/analyze/batch`
 
-Clears all internal caches.
+Analyze multiple games in a single request (max 10 games).
 
-#### Response
+**Request Body:**
+
+```json
+{
+  "appIds": [730, 570, 440],
+  "options": {
+    "includeSteamData": true,
+    "includeSteamSpyData": true,
+    "includeITADData": true,
+    "includePriceAnalysis": true
+  }
+}
+```
+
+**Response:**
 
 ```json
 {
   "success": true,
-  "message": "All caches cleared successfully",
-  "timestamp": "2024-01-15T10:30:00.000Z"
+  "data": [
+    {
+      /* Analysis for each game */
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "successful": 3,
+    "failed": 0
+  }
 }
 ```
 
-## Usage Examples
+### Search and Discovery
 
-### Fetch a Single Game
+#### Search Games
 
-```bash
-curl -X POST http://localhost:3000/api/fetch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "single",
+**GET** `/search?query=portal&limit=20`
+
+Search for games on Steam.
+
+**Query Parameters:**
+
+- `query` (required): Search term
+- `limit` (optional): Number of results (default: 20, max: 50)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "games": [
+      {
+        "appId": 400,
+        "name": "Portal",
+        "price": 999,
+        "originalPrice": 999,
+        "discountPercent": 0,
+        "headerImage": "https://..."
+      }
+    ],
+    "total": 1,
+    "query": "portal"
+  }
+}
+```
+
+#### Featured Games
+
+**GET** `/featured`
+
+Get featured games and deals from Steam.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "appId": 730,
+      "name": "Counter-Strike 2",
+      "price": 1999,
+      "originalPrice": 1999,
+      "discountPercent": 0,
+      "headerImage": "https://..."
+    }
+  ]
+}
+```
+
+#### Top Games
+
+**GET** `/top-games?criteria=top100in2weeks`
+
+Get top games from SteamSpy.
+
+**Query Parameters:**
+
+- `criteria` (optional): One of `top100in2weeks`, `top100forever`, `top100owned` (default: `top100in2weeks`)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "appId": 730,
+      "name": "Counter-Strike 2",
+      "scoreRank": "1",
+      "positive": 1000000,
+      "negative": 50000,
+      "userscore": 85,
+      "owners": "20,000,000 .. 50,000,000",
+      "averageForever": 120,
+      "average2Weeks": 15,
+      "price": "1999",
+      "discount": "0",
+      "genre": "Action"
+    }
+  ]
+}
+```
+
+#### Genres
+
+**GET** `/genres`
+
+Get all genres with their top games.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "genre": "Action",
+      "games": [
+        /* Top games in Action genre */
+      ]
+    }
+  ]
+}
+```
+
+#### Games by Genre
+
+**GET** `/genres/action`
+
+Get games filtered by specific genre.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "appId": 730,
+      "name": "Counter-Strike 2",
+      "genre": "Action"
+      /* ... other fields */
+    }
+  ]
+}
+```
+
+### Individual Data Sources
+
+#### Steam Data
+
+**GET** `/steam/730`
+
+Get detailed Steam data for a specific game.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
     "appId": 730,
-    "includeReviews": true,
-    "includeSalesHistory": true,
-    "uploadToDb": true
-  }'
+    "name": "Counter-Strike 2",
+    "isFree": false,
+    "price": 1999,
+    "developer": "Valve",
+    "publisher": "Valve",
+    "genres": ["Action", "FPS"],
+    "releaseDate": "2012-08-21",
+    "headerImage": "https://..."
+    /* ... more fields */
+  }
+}
 ```
 
-### Fetch Trending Games
+#### SteamSpy Data
 
-```bash
-curl -X POST http://localhost:3000/api/fetch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "trending",
-    "limit": 10,
-    "includeReviews": true,
-    "uploadToDb": true
-  }'
+**GET** `/steamspy/730`
+
+Get SteamSpy market data for a specific game.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "appId": 730,
+    "name": "Counter-Strike 2",
+    "developer": "Valve",
+    "publisher": "Valve",
+    "scoreRank": "1",
+    "positive": 1000000,
+    "negative": 50000,
+    "owners": "20,000,000 .. 50,000,000",
+    "averageForever": 120,
+    "average2Weeks": 15
+    /* ... more fields */
+  }
+}
 ```
 
-### Search for Games
+## Data Models
 
-```bash
-curl -X POST http://localhost:3000/api/fetch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "search",
-    "query": "RPG",
-    "limit": 5,
-    "includeReviews": true,
-    "uploadToDb": true
-  }'
+### SteamGameDetails
+
+```typescript
+interface SteamGameDetails {
+  appId: number;
+  name: string;
+  isFree: boolean;
+  price: number;
+  originalPrice?: number;
+  discountPercent?: number;
+  developer: string;
+  publisher: string;
+  tags: string[];
+  categories: string[];
+  releaseDate: string;
+  metacritic?: {
+    score: number;
+    url: string;
+  };
+  platforms: {
+    windows: boolean;
+    mac: boolean;
+    linux: boolean;
+  };
+  genres: string[];
+  description: string;
+  headerImage: string;
+  screenshots: string[];
+  movies: Array<{
+    id: number;
+    name: string;
+    thumbnail: string;
+    webm: { "480": string; max: string };
+    mp4: { "480": string; max: string };
+  }>;
+  background: string;
+}
 ```
 
-### Fetch Games by Genre
+### SteamSpyGameData
 
-```bash
-curl -X POST http://localhost:3000/api/fetch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "genre",
-    "query": "Action",
-    "limit": 10,
-    "includeReviews": true,
-    "uploadToDb": true
-  }'
+```typescript
+interface SteamSpyGameData {
+  appId: number;
+  name: string;
+  developer: string;
+  publisher: string;
+  scoreRank: string;
+  positive: number;
+  negative: number;
+  userscore: number;
+  owners: string;
+  averageForever: number;
+  average2Weeks: number;
+  medianForever: number;
+  median2Weeks: number;
+  price: string;
+  initialPrice: string;
+  discount: string;
+  languages: string;
+  genre: string;
+  tags: { [key: string]: number };
+  releaseDate: string;
+  lastUpdated: string;
+}
 ```
 
-### Fetch Games by Tag
+### PriceAnalysis
 
-```bash
-curl -X POST http://localhost:3000/api/fetch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "tag",
-    "query": "Multiplayer",
-    "limit": 10,
-    "includeReviews": true,
-    "uploadToDb": true
-  }'
+```typescript
+interface PriceAnalysis {
+  appId: number;
+  name: string;
+  currentPrice: number;
+  recommendedPrice: number;
+  priceConfidence: number;
+  demandScore: number;
+  competitionScore: number;
+  marketTrend: "bullish" | "bearish" | "neutral";
+  priceHistory: {
+    lowestPrice: number;
+    highestPrice: number;
+    averagePrice: number;
+    priceVolatility: number;
+    priceTrend: "increasing" | "decreasing" | "stable";
+  };
+  factors: {
+    popularity: number;
+    reviewScore: number;
+    age: number;
+    genreCompetition: number;
+    seasonalDemand: number;
+    priceElasticity: number;
+  };
+  recommendations: string[];
+}
 ```
-
-### Fetch Multiple Games
-
-```bash
-curl -X POST http://localhost:3000/api/fetch \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "multiple",
-    "appIds": [730, 570, 440, 578080],
-    "includeReviews": true,
-    "uploadToDb": true
-  }'
-```
-
-## Services
-
-### Data Fetching Service
-
-Handles fetching data from SteamSpy and Steam Review APIs with rate limiting and caching.
-
-**Key Features:**
-- Rate limiting (1 request/second for SteamSpy, 1 request/second for Steam Review)
-- Caching (5-minute cache duration)
-- Error handling and retry logic
-- Parallel data fetching from multiple sources
-
-### MongoDB Upload Service
-
-Handles uploading and updating game data in MongoDB with comprehensive analysis.
-
-**Key Features:**
-- Automatic game creation/update
-- Data analysis and scoring
-- Market position analysis
-- Price optimization suggestions
-- Player engagement metrics
-
-### Game Data Service
-
-Combines data fetching and MongoDB upload functionality into a single service.
-
-**Key Features:**
-- One-stop service for fetch-and-upload operations
-- Batch processing capabilities
-- Health monitoring
-- Statistics and reporting
-
-## Rate Limits
-
-- **SteamSpy API**: 1 request per second (1 request per 60 seconds for 'all' requests)
-- **Steam Review API**: 1 request per second recommended
-- **MongoDB**: No specific limits, but includes delays between operations
 
 ## Error Handling
 
-The API returns structured error responses:
+All endpoints return consistent error responses:
 
 ```json
 {
   "success": false,
-  "error": "Failed to fetch game data",
-  "message": "Game not found in SteamSpy database",
-  "timestamp": "2024-01-15T10:30:00.000Z"
+  "error": "Error message",
+  "timestamp": "2024-01-01T00:00:00.000Z"
 }
 ```
 
-Common error scenarios:
-- Game not found in SteamSpy database
-- Game data hidden on developer request
-- API rate limit exceeded
-- Network connectivity issues
-- MongoDB connection problems
+Common HTTP status codes:
 
-## Testing
+- `200`: Success
+- `400`: Bad Request (missing parameters, invalid data)
+- `404`: Not Found (game not found)
+- `500`: Internal Server Error
 
-Use the provided test script to verify API functionality:
+## Rate Limiting
+
+The API implements rate limiting to prevent abuse:
+
+- 100 requests per 15-minute window per IP
+- Batch requests are limited to 10 games per request
+- Individual API calls have timeouts (10-15 seconds)
+
+## Caching
+
+The API includes caching for frequently requested data:
+
+- Steam data: 1 hour
+- SteamSpy data: 1 hour
+- ITAD data: 1 hour
+- Analysis results: 30 minutes
+
+## Mathematical Models
+
+The price optimizer uses several mathematical models:
+
+### Price Elasticity
+
+Calculates how demand changes with price changes using historical data.
+
+### Demand Curve Analysis
+
+Generates demand curves to find revenue-maximizing price points.
+
+### Market Trend Analysis
+
+Uses linear regression to determine price trends (increasing/decreasing/stable).
+
+### Popularity Scoring
+
+Weighted combination of:
+
+- Owner count (30%)
+- Review ratio (25%)
+- Average playtime (25%)
+- Recent activity (20%)
+
+### Competition Analysis
+
+Evaluates market competition based on:
+
+- Genre overlap
+- Price range competition
+- Market saturation
+
+## Examples
+
+### JavaScript/Node.js
+
+```javascript
+const axios = require("axios");
+
+// Analyze a game
+const analyzeGame = async (appId) => {
+  try {
+    const response = await axios.post("http://localhost:5001/api/analyze", {
+      appId: appId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error.response.data);
+  }
+};
+
+// Search for games
+const searchGames = async (query) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:5001/api/search?query=${query}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error.response.data);
+  }
+};
+
+// Get top games
+const getTopGames = async () => {
+  try {
+    const response = await axios.get("http://localhost:5001/api/top-games");
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error.response.data);
+  }
+};
+```
+
+### Python
+
+```python
+import requests
+
+# Analyze a game
+def analyze_game(app_id):
+    try:
+        response = requests.post('http://localhost:5001/api/analyze',
+                               json={'appId': app_id})
+        return response.json()
+    except Exception as e:
+        print(f'Error: {e}')
+
+# Search for games
+def search_games(query):
+    try:
+        response = requests.get(f'http://localhost:5001/api/search?query={query}')
+        return response.json()
+    except Exception as e:
+        print(f'Error: {e}')
+```
+
+### cURL
 
 ```bash
-node test-new-services.js
+# Analyze a game
+curl -X POST http://localhost:5001/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{"appId": 730}'
+
+# Search for games
+curl "http://localhost:5001/api/search?query=portal&limit=10"
+
+# Get top games
+curl "http://localhost:5001/api/top-games?criteria=top100in2weeks"
+
+# Health check
+curl http://localhost:5001/api/health
 ```
 
-This script tests all major endpoints and provides a comprehensive report of API health.
+## Troubleshooting
 
-## Configuration
+### Common Issues
 
-The API uses environment variables for configuration:
+1. **API Key Missing**: Ensure `ITAD_API_KEY` is set in your `.env` file
+2. **Rate Limiting**: Reduce request frequency if hitting rate limits
+3. **Game Not Found**: Some games may not be available in all APIs
+4. **Timeout Errors**: Increase timeout values for slow connections
 
-```env
-MONGODB_URI=mongodb://localhost:27017/pricevalve
-PORT=3000
-NODE_ENV=development
+### Debug Mode
+
+Enable debug logging by setting `LOG_LEVEL=debug` in your `.env` file.
+
+### API Status
+
+Check the health endpoint to verify API status:
+
+```bash
+curl http://localhost:5001/api/health
 ```
 
-## Data Sources
+## Contributing
 
-### SteamSpy API
-- **Base URL**: https://steamspy.com/api.php
-- **Documentation**: https://steamspy.com/api.php
-- **Data**: Ownership, playtime, pricing, tags, genres
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-### Steam Review API
-- **Base URL**: https://store.steampowered.com/appreviews/{appid}
-- **Data**: Review scores, ratings, user feedback
+## License
 
-## Migration Notes
-
-This version removes dependency on the Steam Web API and uses only SteamSpy and Steam Review APIs. The data model has been updated to reflect this change, with improved focus on ownership data, playtime statistics, and review metrics. 
+This project is licensed under the ISC License.
