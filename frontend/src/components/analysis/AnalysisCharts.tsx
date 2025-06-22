@@ -78,7 +78,7 @@ export const AnalysisCharts: React.FC<AnalysisChartsProps> = ({ competitorData, 
       <div className="grid lg:grid-cols-2 gap-6 mb-6">
         <ChartCard 
           title="Competitor Price Comparison" 
-          subtitle={`Your game vs ${competitors.length} similar titles`}
+          subtitle={`Your game vs ${competitors.length} similar games`}
         >
           <BarChart data={competitors} layout="vertical" margin={{ top: 5, right: 20, left: 80, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
