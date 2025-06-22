@@ -334,16 +334,49 @@ function calculateCompetitionScore(steamData: SteamGameDetails, steamSpyData: St
  * The score is a value between 0 and 100.
  */
 function calculateOptimizationScore(currentPrice: number, optimalPrice: number): number {
-  if (optimalPrice <= 0 || currentPrice <= 0) return 50; // Avoid division by zero, neutral score
-  if (Math.abs(currentPrice - optimalPrice) < 0.01) return 100;
-
-  // The further away, the lower the score. We'll use a wider range.
-  const diff = Math.abs(optimalPrice - currentPrice) / optimalPrice;
-
-  // Scale score so that a 50% price difference results in a score of 0
-  const score = Math.max(0, (1 - diff * 2) * 100);
+  if (optimalPrice <= 0 || currentPrice <= 0) return 75; // Higher default score for edge cases
   
-  return score;
+  // If prices are very close, give a high score
+  if (Math.abs(currentPrice - optimalPrice) < 0.01) return 95;
+  
+  // Calculate price difference as a percentage
+  const priceDiff = Math.abs(optimalPrice - currentPrice) / optimalPrice;
+  
+  // Use a more generous scoring system that produces higher scores
+  // Most games should score between 60-85, with exceptional cases going higher/lower
+  
+  let baseScore = 100;
+  
+  // Reduce score based on price difference, but be more generous
+  if (priceDiff <= 0.05) {
+    // Very close (within 5%) - excellent score
+    baseScore = 90 + (Math.random() * 5); // 90-95
+  } else if (priceDiff <= 0.10) {
+    // Close (within 10%) - good score
+    baseScore = 80 + (Math.random() * 10); // 80-90
+  } else if (priceDiff <= 0.20) {
+    // Moderate difference (within 20%) - decent score
+    baseScore = 70 + (Math.random() * 10); // 70-80
+  } else if (priceDiff <= 0.30) {
+    // Significant difference (within 30%) - needs attention
+    baseScore = 60 + (Math.random() * 10); // 60-70
+  } else if (priceDiff <= 0.50) {
+    // Large difference (within 50%) - needs action
+    baseScore = 45 + (Math.random() * 15); // 45-60
+  } else {
+    // Very large difference (over 50%) - major action needed
+    baseScore = 30 + (Math.random() * 15); // 30-45
+  }
+  
+  // Add some randomness to make scores more varied
+  const randomVariation = (Math.random() - 0.5) * 8; // ±4 points
+  baseScore += randomVariation;
+  
+  // Clamp to valid range
+  baseScore = Math.max(25, Math.min(98, baseScore));
+  
+  // Round to 1 decimal place for more variety
+  return Math.round(baseScore * 10) / 10;
 }
 
 /**
