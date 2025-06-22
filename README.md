@@ -18,7 +18,7 @@ PriceWave is an intelligent pricing platform that analyzes Steam games in real-t
 ## 📁 Project Architecture
 
 ```
-PriceWave/
+PriceValve/
 ├── 📁 backend/                    # Node.js/Express Backend
 │   ├── src/
 │   │   ├── 📁 controllers/        # API controllers
