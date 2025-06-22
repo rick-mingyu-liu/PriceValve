@@ -126,7 +126,7 @@ export default function HomePage() {
               Drop your Steam URL, get math-backed pricing advice in seconds. 
               No guesswork, just data.
               <br />
-              (And you'll make more money!)
+              Let's make more money!
             </motion.p>
 
             <motion.div
@@ -509,7 +509,7 @@ export default function HomePage() {
       >
         <div className="max-w-6xl mx-auto px-8 text-center">
           <p className="text-gray-600 text-sm">
-            © 2024 PriceValve |
+            © 2025 PriceValve |
             {["Privacy Policy", "Contact", "Support"].map((link, index) => (
               <motion.a
                 key={link}
