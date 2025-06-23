@@ -1,5 +1,7 @@
 # 🎮 PriceValve: Steam Game Revenue Maximization Interface
 
+- More details: https://devpost.com/software/pricevalve
+
 > **Real-time Steam game analysis with revenue optimization-driven pricing recommendations**
 
 ## 🎯 Project Overview
