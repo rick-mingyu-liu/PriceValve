@@ -48,7 +48,7 @@ export function GameSelector({ onGameSelect, showSimilarGames = true, currentGam
         const genreQuery = currentGame.data.genres[0] || "action"
         const response = await api.searchGames(genreQuery, 6)
         if (response.success && response.data?.games) {
-          setSimilarGames(response.data.games.filter(game => game.appId !== appId))
+          setSimilarGames(response.data.games.filter((game: { appId: string }) => game.appId !== appId))
         }
       }
     } catch (error) {
