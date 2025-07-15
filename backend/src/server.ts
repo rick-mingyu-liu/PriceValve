@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5001;
 // CORS configuration
 const corsOptions = {
   origin: [
-    'https://price-valve-frontend.vercel.app/',
+    'https://price-valve-frontend.vercel.app',
     'http://localhost:3000',
     'http://localhost:3001'
   ],
