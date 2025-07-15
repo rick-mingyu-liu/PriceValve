@@ -13,10 +13,11 @@ const corsOptions = {
   origin: [
     'http://localhost:3000',
     'http://localhost:3001',
-    'https://price-valve-frontend-gxzqkzrht-rick-lius-projects.vercel.app'
+    'https://price-valve-frontend-gxzqkzrht-rick-lius-projects.vercel.app',
+    'https://YOUR-ACTUAL-FRONTEND-URL.com' // TODO: Replace with your real deployed frontend URL
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['*'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 };
 
