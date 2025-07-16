@@ -1,5 +1,5 @@
 // API client for PriceValve backend
-const BASE_URL = "http://localhost:5001";
+const BASE_URL =  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
 // TypeScript interfaces matching backend response structure
 export interface SteamGameDetails {
