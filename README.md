@@ -1,10 +1,10 @@
-# 🎮 PriceValve: Steam Game Revenue Maximization Interface
+# PriceValve: Steam Game Revenue Maximization Interface
 
 - More details: https://devpost.com/software/pricevalve
 
 > **Real-time Steam game analysis with revenue optimization-driven pricing recommendations**
 
-## 🎯 Project Overview
+## Project Overview
 
 PriceValve is an intelligent pricing platform that analyzes Steam games in real-time and provides Revenue Optimizing pricing recommendations. The system combines data from Steam APIs, sentiment analysis, and demand estimation models to help developers optimize their game pricing strategy.
 
@@ -17,7 +17,7 @@ PriceValve is an intelligent pricing platform that analyzes Steam games in real-
 - **🏆 Competitor Comparison**: Comprehensive analysis of similar games and market positioning
 - **🎮 Game Discovery**: PriceValveScript.js-inspired game search and selection functionality
 
-## 📁 Project Architecture
+## Project Architecture
 
 ```
 PriceValve/
@@ -56,7 +56,7 @@ PriceValve/
 └── README.md
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -105,7 +105,7 @@ PriceValve/
    - Frontend: http://localhost:3000
    - Backend: http://localhost:5001
 
-## 🎮 Frontend Features
+## Frontend Features
 
 ### Core Analysis Features
 
@@ -127,7 +127,7 @@ The frontend provides comprehensive game analysis with a modern, intuitive inter
 - **PriceOptimizationCard**: Price optimization recommendations
 - **TimingOptimizationCard**: Launch timing recommendations
 
-## 📊 Data Models
+## Data Models
 
 ### Core Game Data Model
 
@@ -195,7 +195,7 @@ interface RevenuePredictions {
 }
 ```
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Game Analysis
 - `POST /api/analyze` - Analyze a single game
@@ -213,7 +213,7 @@ interface RevenuePredictions {
 ### Health Check
 - `GET /api/health` - API health status
 
-## 🎨 Frontend Components
+## Frontend Components
 
 Built with **shadcn/ui** and **Tailwind CSS**:
 
@@ -234,7 +234,7 @@ Built with **shadcn/ui** and **Tailwind CSS**:
 - `Button` - Styled button component
 - `SearchBar` - Game search functionality
 
-## 📈 Data Sources
+## Data Sources
 
 ### Steam Web API
 - Game metadata
@@ -248,7 +248,7 @@ Built with **shadcn/ui** and **Tailwind CSS**:
 - Market positioning
 - Genre analysis
 
-## 🔧 Development
+## Development
 
 ### Backend Development
 ```bash
@@ -266,7 +266,7 @@ npm run build        # Build for production
 npm run lint         # Run linter
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Backend Deployment
 ```bash
@@ -282,7 +282,7 @@ npm run build
 npm start
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
